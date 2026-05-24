@@ -1,0 +1,2117 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🌟 數學樂園 v2 — 台灣國小互動數學</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --red:#E74C3C;--orange:#E67E22;--yellow:#D4A000;
+  --green:#2ECC71;--blue:#3498DB;--purple:#9B59B6;
+  --pink:#E91E8C;--teal:#1ABC9C;--dark:#2C3E50;
+  --bg:#FFF9F0;--white:#fff;--text:#333;--muted:#888;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+button,select,input{font-family:'Nunito',sans-serif}
+.screen{display:none;min-height:100vh;flex-direction:column}
+.screen.active{display:flex}
+.hidden{display:none!important}
+
+/* WELCOME */
+#screen-welcome{background:linear-gradient(160deg,#FF6B6B,#FF8E53 45%,#FFC947);align-items:center;justify-content:center;padding:30px 20px;text-align:center;position:relative;overflow:hidden}
+.w-bubbles{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.w-bubble{position:absolute;border-radius:50%;opacity:.1}
+.w-logo{font-size:54px;margin-bottom:8px;animation:logoBounce 2s ease-in-out infinite}
+@keyframes logoBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}
+.w-title{font-size:38px;font-weight:900;color:#fff;text-shadow:3px 4px 0 rgba(0,0,0,.15);margin-bottom:4px}
+.w-sub{font-size:14px;color:rgba(255,255,255,.9);font-weight:700;margin-bottom:28px}
+.char-parade{display:flex;gap:10px;justify-content:center;margin-bottom:36px;flex-wrap:wrap}
+.char-block{width:52px;height:58px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900;color:#fff;animation:bounce 1.2s ease-in-out infinite;box-shadow:0 5px 0 rgba(0,0,0,.12)}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.profile-section{background:rgba(255,255,255,.93);border-radius:24px;padding:24px;width:100%;max-width:380px;box-shadow:0 12px 40px rgba(0,0,0,.15)}
+.profile-title{font-size:15px;font-weight:900;color:var(--text);margin-bottom:14px}
+.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.profile-card{border-radius:16px;padding:14px 10px;text-align:center;cursor:pointer;border:3px solid transparent;transition:all .2s;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.profile-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,0,0,.12)}
+.profile-card.selected{border-color:var(--red);transform:translateY(-3px)}
+.pc-avatar{font-size:34px;margin-bottom:4px}
+.pc-name{font-size:14px;font-weight:800}
+.pc-stars{font-size:12px;color:var(--yellow);margin-top:2px}
+.new-btn{width:100%;padding:11px;border-radius:14px;border:2.5px dashed #ddd;background:transparent;font-size:13px;font-weight:800;color:var(--muted);margin-bottom:10px;transition:all .2s;cursor:pointer}
+.new-btn:hover{border-color:var(--orange);color:var(--orange)}
+.enter-btn{width:100%;padding:14px;border-radius:16px;border:none;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-size:16px;font-weight:900;box-shadow:0 5px 15px rgba(231,76,60,.4);transition:all .2s;cursor:pointer}
+.enter-btn:hover{transform:translateY(-2px)}
+.parent-link{margin-top:12px;font-size:12px;color:rgba(255,255,255,.85);font-weight:700;cursor:pointer;text-decoration:underline}
+
+/* APP */
+#screen-app{padding-bottom:76px}
+.topbar{background:linear-gradient(135deg,#FF6B6B,#FF8E53,#FFC947);padding:13px 16px 10px;position:sticky;top:0;z-index:100;box-shadow:0 3px 12px rgba(255,107,107,.3)}
+.topbar-inner{display:flex;align-items:center;gap:10px}
+.tb-avatar{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.3);display:flex;align-items:center;justify-content:center;font-size:20px}
+.tb-name{font-size:15px;font-weight:900;color:#fff;flex:1}
+.tb-stars{font-size:12px;color:rgba(255,255,255,.9);font-weight:700}
+.tb-home{padding:6px 13px;border-radius:10px;border:none;background:rgba(255,255,255,.25);color:#fff;font-size:12px;font-weight:800;cursor:pointer}
+.grade-bar{display:flex;gap:6px;padding:12px 14px 6px;overflow-x:auto;scrollbar-width:none}
+.grade-bar::-webkit-scrollbar{display:none}
+.gb-btn{flex:0 0 auto;padding:7px 15px;border-radius:20px;border:2.5px solid transparent;font-size:13px;font-weight:800;transition:all .2s;white-space:nowrap;cursor:pointer}
+.gb-btn.g1{background:#FFE5E5;color:var(--red);border-color:#FFBBBB}
+.gb-btn.g2{background:#FFF0E0;color:var(--orange);border-color:#FFCC99}
+.gb-btn.g3{background:#FFF9D9;color:var(--yellow);border-color:#FFE566}
+.gb-btn.g4{background:#E0F9E8;color:#1E9E50;border-color:#A0E8BB}
+.gb-btn.g5{background:#E0EEFF;color:#1A6EC0;border-color:#99C3F0}
+.gb-btn.g6{background:#F0E5FF;color:#7B3EBB;border-color:#C899EE}
+.gb-btn.active,.gb-btn:hover{transform:scale(1.06) translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.12)}
+.gb-btn.g1.active{background:var(--red);color:#fff}
+.gb-btn.g2.active{background:var(--orange);color:#fff}
+.gb-btn.g3.active{background:var(--yellow);color:#fff}
+.gb-btn.g4.active{background:#1E9E50;color:#fff}
+.gb-btn.g5.active{background:#1A6EC0;color:#fff}
+.gb-btn.g6.active{background:#7B3EBB;color:#fff}
+.topics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:6px 14px 10px}
+.topic-card{background:#fff;border-radius:16px;padding:12px 8px 10px;text-align:center;cursor:pointer;border:2.5px solid transparent;box-shadow:0 2px 8px rgba(0,0,0,.07);transition:all .2s}
+.topic-card:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(0,0,0,.11)}
+.topic-card.active{border-color:var(--accent,#E74C3C)}
+.tc-icon{font-size:28px;margin-bottom:4px}
+.tc-name{font-size:11px;font-weight:800;color:#444;line-height:1.3}
+.activity-zone{margin:0 14px 14px;background:#fff;border-radius:20px;padding:16px;box-shadow:0 4px 16px rgba(0,0,0,.09);min-height:220px}
+.az-header{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.az-icon{font-size:22px}.az-title{font-size:15px;font-weight:900;color:var(--text);flex:1}
+.az-badge{font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;background:#FFE5CC;color:#D06000}
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;display:flex;border-top:1px solid #eee;z-index:200;box-shadow:0 -2px 12px rgba(0,0,0,.08)}
+.bn-btn{flex:1;padding:10px 4px 8px;border:none;background:transparent;font-size:10px;font-weight:800;color:#bbb;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
+.bn-icon{font-size:22px}
+.bn-btn.active{color:var(--red)}
+
+/* QUIZ */
+.big-q{font-size:32px;font-weight:900;text-align:center;color:var(--text);margin:8px 0;letter-spacing:1px}
+.ans-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.ans-btn{padding:13px;border-radius:13px;border:2.5px solid #eee;background:#FAFAFA;font-size:20px;font-weight:900;color:var(--text);transition:all .18s;cursor:pointer}
+.ans-btn:hover{border-color:var(--blue);background:#E8F4FF;transform:scale(1.04)}
+.ans-btn.correct{border-color:var(--green);background:#E8FFF0;color:#1E9E50;animation:pop .3s ease}
+.ans-btn.wrong{border-color:var(--red);background:#FFEEEE;color:#C0392B;animation:wag .35s ease}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes wag{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.feedback-msg{text-align:center;font-size:14px;font-weight:800;margin-top:8px;min-height:22px}
+.feedback-good{color:var(--green)}.feedback-bad{color:var(--red)}
+.next-btn{display:block;margin:10px auto 0;padding:10px 28px;border-radius:20px;border:none;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-size:14px;font-weight:800;cursor:pointer;transition:all .2s}
+.next-btn:hover{transform:translateY(-2px)}
+.score-pill{padding:4px 12px;border-radius:20px;background:#FFF3CD;color:#946000;font-size:12px;font-weight:800}
+.star-anim{font-size:22px;animation:starPop .4s ease both}
+@keyframes starPop{0%{transform:scale(.3) rotate(-20deg)}70%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+/* RACE */
+.race-track{position:relative;background:linear-gradient(135deg,#1a1a2e,#16213e);border-radius:18px;padding:16px;overflow:hidden;min-height:300px}
+.race-stars-bg{position:absolute;inset:0;pointer-events:none}
+.race-star{position:absolute;width:3px;height:3px;background:#fff;border-radius:50%;opacity:.6;animation:twinkle 2s ease-in-out infinite}
+@keyframes twinkle{0%,100%{opacity:.2}50%{opacity:.9}}
+.race-title{font-size:15px;font-weight:900;color:#fff;margin-bottom:12px}
+.track-lane{position:relative;height:54px;background:rgba(255,255,255,.06);border-radius:12px;margin-bottom:8px;overflow:hidden;border:1px solid rgba(255,255,255,.1)}
+.track-finish{position:absolute;right:0;top:0;bottom:0;width:40px;background:repeating-linear-gradient(45deg,rgba(255,255,255,.15),rgba(255,255,255,.15) 5px,transparent 5px,transparent 10px);border-left:3px dashed rgba(255,255,255,.4);display:flex;align-items:center;justify-content:center;font-size:16px}
+.racer{position:absolute;top:50%;transform:translateY(-50%);font-size:26px;transition:left .35s cubic-bezier(.34,1.56,.64,1);filter:drop-shadow(0 0 6px rgba(255,200,0,.5))}
+.racer-label{position:absolute;top:4px;left:8px;font-size:10px;font-weight:800;color:rgba(255,255,255,.7)}
+.race-question{background:rgba(255,255,255,.1);border-radius:14px;padding:12px;margin-top:8px;text-align:center}
+.race-q-text{font-size:26px;font-weight:900;color:#fff;margin-bottom:10px}
+.race-choices{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.race-choice{padding:10px 4px;border-radius:10px;border:2px solid rgba(255,255,255,.2);background:rgba(255,255,255,.1);color:#fff;font-size:15px;font-weight:900;cursor:pointer;transition:all .15s}
+.race-choice:hover{background:rgba(255,255,255,.25);transform:translateY(-2px)}
+.race-choice.r-correct{border-color:#2ECC71;background:rgba(46,204,113,.3);animation:pop .3s ease}
+.race-choice.r-wrong{border-color:#E74C3C;background:rgba(231,76,60,.3);animation:wag .35s ease}
+.race-mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.race-mode-btn{padding:12px;border-radius:14px;border:none;font-size:13px;font-weight:800;cursor:pointer;transition:all .2s;color:#fff}
+.race-mode-btn:hover{transform:translateY(-2px);filter:brightness(1.1)}
+.countdown{font-size:64px;font-weight:900;color:#fff;text-align:center;animation:cdPop .4s ease;text-shadow:0 0 20px rgba(255,200,0,.8)}
+@keyframes cdPop{0%{transform:scale(2);opacity:0}100%{transform:scale(1);opacity:1}}
+.podium{display:flex;align-items:flex-end;justify-content:center;gap:8px;margin:10px 0}
+.podium-place{text-align:center}
+.podium-bar{border-radius:8px 8px 0 0;width:56px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:8px;font-size:10px;font-weight:800;color:#fff}
+.podium-avatar{font-size:24px;margin-bottom:4px}
+
+/* MEMORY */
+.mem-header{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:10px}
+.mem-pill{padding:4px 12px;border-radius:20px;background:#F0F0F0;color:#666;font-size:12px;font-weight:800}
+.mem-grid-3x4{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.mem-grid-4x4{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.mem-grid-4x5{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.mcard{border-radius:12px;cursor:pointer;perspective:500px;aspect-ratio:1}
+.mcard-inner{width:100%;height:100%;border-radius:12px;transition:transform .4s;transform-style:preserve-3d;position:relative}
+.mcard.flipped .mcard-inner,.mcard.matched .mcard-inner{transform:rotateY(180deg)}
+.mcard.matched .mcard-back{border:2.5px solid var(--green);background:#E8FFF0}
+.mcard.matched{animation:matchPop .4s ease}
+@keyframes matchPop{0%{transform:scale(1)}50%{transform:scale(1.12)}100%{transform:scale(1)}}
+.mcard-front,.mcard-back{position:absolute;inset:0;border-radius:12px;display:flex;align-items:center;justify-content:center;backface-visibility:hidden;flex-direction:column;gap:2px}
+.mcard-front{background:linear-gradient(135deg,#667EEA,#764BA2);color:#fff;font-size:18px;font-weight:900}
+.mcard-back{background:#fff;border:2.5px solid #eee;transform:rotateY(180deg);font-size:13px;font-weight:900;padding:4px;text-align:center}
+.card-q{font-size:10px;color:var(--muted);font-weight:700}
+.mem-level-btn{padding:7px 13px;border-radius:14px;border:2px solid #eee;background:#fff;font-size:12px;font-weight:800;color:var(--muted);cursor:pointer;transition:all .2s}
+.mem-level-btn.active{border-color:var(--purple);background:#F0E5FF;color:var(--purple)}
+.mem-category-btn{padding:7px 13px;border-radius:14px;border:2px solid #eee;background:#fff;font-size:12px;font-weight:800;color:var(--muted);cursor:pointer;transition:all .2s}
+.mem-category-btn.active{border-color:var(--blue);background:#E0EEFF;color:var(--blue)}
+.mem-stats-row{display:flex;gap:10px;background:#F8F8F8;border-radius:12px;padding:10px;margin:8px 0;flex-wrap:wrap}
+.mem-stat{text-align:center;flex:1;min-width:50px}
+.mem-stat-num{font-size:20px;font-weight:900}
+.mem-stat-label{font-size:10px;font-weight:800;color:var(--muted)}
+.mem-win-banner{background:linear-gradient(135deg,var(--green),var(--teal));border-radius:16px;padding:16px;text-align:center;color:#fff;margin-top:10px}
+.mem-win-title{font-size:20px;font-weight:900;margin-bottom:4px}
+.mem-best-badge{display:inline-block;background:rgba(255,255,255,.25);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:800;margin-top:8px}
+.hint-btn{padding:4px 12px;border-radius:14px;border:none;background:#FFF0E0;color:#D06000;font-size:12px;font-weight:800;cursor:pointer}
+.hint-btn:disabled{opacity:.4;cursor:default}
+
+/* PROGRESS */
+.prog-tabs{display:flex;gap:0;background:#F0F0F0;border-radius:14px;padding:3px;margin-bottom:12px}
+.prog-tab{flex:1;padding:7px 4px;border-radius:11px;border:none;font-size:12px;font-weight:800;color:var(--muted);background:transparent;cursor:pointer;transition:all .2s}
+.prog-tab.active{background:#fff;color:var(--text);box-shadow:0 2px 8px rgba(0,0,0,.1)}
+.prog-section-title{font-size:13px;font-weight:900;color:var(--text);margin-bottom:8px}
+.prog-bar-wrap{height:13px;background:#F0F0F0;border-radius:10px;overflow:hidden;margin-top:4px}
+.prog-bar-fill{height:100%;border-radius:10px;transition:width 1s ease}
+.prog-item{margin-bottom:10px}
+.prog-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.badge-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.badge-card{background:#F8F8F8;border-radius:14px;padding:10px 6px;text-align:center;border:2px solid transparent;cursor:help;position:relative}
+.badge-card.unlocked{background:#fff;border-color:var(--yellow);box-shadow:0 2px 8px rgba(0,0,0,.07)}
+.badge-card.locked{opacity:.3;filter:grayscale(1)}
+.badge-icon{font-size:26px;margin-bottom:3px}
+.badge-name{font-size:10px;font-weight:800;color:#555;line-height:1.3}
+.badge-new{position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;font-size:9px;font-weight:900;padding:2px 5px;border-radius:10px}
+.heatmap-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-top:8px}
+.heatmap-cell{aspect-ratio:1;border-radius:3px}
+.chart-bar-wrap{display:flex;align-items:flex-end;gap:6px;height:90px;margin-top:8px}
+.chart-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.chart-bar{width:100%;border-radius:6px 6px 0 0;min-height:4px;transition:height .8s ease}
+.chart-bar-lbl{font-size:10px;font-weight:800;color:var(--muted)}
+.chart-val{font-size:10px;font-weight:900}
+.topic-accuracy-row{display:flex;align-items:center;gap:8px;padding:8px;background:#F8F8F8;border-radius:10px;margin-bottom:6px}
+.ta-topic{font-size:12px;font-weight:800;flex:1}
+.ta-bar-wrap{flex:2;height:8px;background:#eee;border-radius:10px;overflow:hidden}
+.ta-bar{height:100%;border-radius:10px;transition:width .8s ease}
+.ta-pct{font-size:12px;font-weight:900;min-width:36px;text-align:right}
+.level-ring{position:relative;width:80px;height:80px;margin:0 auto 8px}
+.level-ring-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.level-num{font-size:20px;font-weight:900;color:var(--text)}
+.level-lbl{font-size:9px;font-weight:800;color:var(--muted)}
+.xp-bar-wrap{height:8px;background:rgba(255,255,255,.2);border-radius:10px;overflow:hidden;margin-bottom:4px}
+.xp-bar-fill{height:100%;background:linear-gradient(90deg,#FFD700,#FF8E53);border-radius:10px;transition:width 1s ease}
+
+/* MODALS */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:999}
+.modal-box{background:#fff;border-radius:20px;padding:24px;width:300px;max-width:90vw}
+.modal-title{font-size:18px;font-weight:900;margin-bottom:14px;text-align:center}
+.modal-input{width:100%;padding:10px 14px;border-radius:12px;border:2.5px solid #eee;font-size:15px;font-weight:700;margin-bottom:10px}
+.modal-input:focus{outline:none;border-color:var(--orange)}
+.avatar-pick{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-bottom:14px}
+.avatar-opt{width:46px;height:46px;border-radius:12px;border:3px solid transparent;font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:#F0F0F0;transition:all .2s}
+.avatar-opt.selected{border-color:var(--orange);background:#FFF0E0}
+.modal-ok{width:100%;padding:12px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-size:15px;font-weight:900;cursor:pointer}
+.modal-cancel{width:100%;padding:10px;border-radius:14px;border:none;background:#F0F0F0;color:#666;font-size:13px;font-weight:800;margin-top:6px;cursor:pointer}
+.pw-input{width:100%;padding:10px;border-radius:12px;border:2.5px solid #eee;font-size:20px;font-weight:900;text-align:center;letter-spacing:6px;margin-bottom:12px}
+.pw-input:focus{outline:none;border-color:var(--blue)}
+
+/* PARENT */
+#screen-parent{background:#F0F4FF;overflow-y:auto}
+.parent-header{background:linear-gradient(135deg,#2C3E50,#34495E);padding:20px 18px 16px;color:#fff}
+.ph-title{font-size:22px;font-weight:900;margin-bottom:2px}
+.ph-sub{font-size:13px;color:rgba(255,255,255,.7);font-weight:700}
+.parent-body{padding:14px}
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.dash-card{background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.07);text-align:center}
+.dash-num{font-size:26px;font-weight:900;margin-bottom:2px}
+.dash-lbl{font-size:12px;font-weight:800;color:var(--muted)}
+.report-card{background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 10px rgba(0,0,0,.07);margin-bottom:10px}
+.rc-title{font-size:14px;font-weight:900;margin-bottom:10px}
+.act-log{font-size:12px;color:var(--muted);font-weight:700;margin-bottom:5px;padding:7px 10px;background:#F8F8F8;border-radius:10px;display:flex;justify-content:space-between}
+.log-good{color:var(--green)}.log-bad{color:var(--red)}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:800;z-index:500;animation:toastAnim .4s ease;pointer-events:none}
+@keyframes toastAnim{0%{opacity:0;transform:translateX(-50%) translateY(10px)}100%{opacity:1;transform:translateX(-50%) translateY(0)}}
+.restart-btn{padding:11px 28px;border-radius:20px;border:none;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-size:14px;font-weight:800;box-shadow:0 4px 12px rgba(231,76,60,.35);cursor:pointer;transition:all .2s}
+.restart-btn:hover{transform:translateY(-2px)}
+
+/* ═══════════════════════
+   🤖  AI LEARNING CSS
+═══════════════════════ */
+.ai-screen{display:none;position:fixed;inset:0;background:var(--bg);z-index:300;flex-direction:column;overflow-y:auto}
+.ai-screen.active{display:flex}
+.ai-header{background:linear-gradient(135deg,#667EEA,#764BA2);padding:16px 18px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.ai-header-icon{width:44px;height:44px;border-radius:14px;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:22px}
+.ai-header-title{font-size:18px;font-weight:900;color:#fff;flex:1}
+.ai-back{padding:7px 14px;border-radius:10px;border:none;background:rgba(255,255,255,.2);color:#fff;font-size:12px;font-weight:800;cursor:pointer}
+.ai-tabs{display:flex;background:#fff;border-bottom:2px solid #F0F0F0;flex-shrink:0}
+.ai-tab{flex:1;padding:12px 6px;border:none;background:transparent;font-size:12px;font-weight:800;color:var(--muted);cursor:pointer;border-bottom:3px solid transparent;transition:all .2s;display:flex;flex-direction:column;align-items:center;gap:3px}
+.ai-tab .at-icon{font-size:20px}
+.ai-tab.active{color:var(--purple);border-bottom-color:var(--purple)}
+.ai-body{flex:1;padding:14px;overflow-y:auto}
+
+/* Weakness analysis */
+.weakness-card{background:#fff;border-radius:18px;padding:16px;box-shadow:0 3px 14px rgba(0,0,0,.09);margin-bottom:12px}
+.wc-title{font-size:14px;font-weight:900;color:var(--text);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.radar-wrap{position:relative;width:200px;height:200px;margin:0 auto 12px}
+.topic-chip{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:20px;font-size:12px;font-weight:800;margin:3px;cursor:pointer;transition:all .2s}
+.topic-chip:hover{transform:scale(1.05)}
+.practice-q-wrap{background:#F8F8FF;border-radius:14px;padding:14px;margin-top:10px}
+.ai-ans-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.ai-ans-btn{padding:12px;border-radius:12px;border:2.5px solid #eee;background:#fff;font-size:18px;font-weight:900;cursor:pointer;transition:all .18s}
+.ai-ans-btn:hover{border-color:var(--purple);background:#F0E5FF;transform:scale(1.04)}
+.ai-ans-btn.correct{border-color:var(--green);background:#E8FFF0;color:#1E9E50;animation:pop .3s ease}
+.ai-ans-btn.wrong{border-color:var(--red);background:#FFEEEE;color:#C0392B;animation:wag .35s ease}
+.insight-row{display:flex;align-items:flex-start;gap:10px;padding:10px;background:#F8F8F8;border-radius:12px;margin-bottom:8px}
+.insight-icon{font-size:22px;flex-shrink:0}
+.insight-text{font-size:12px;font-weight:700;color:var(--text);line-height:1.5}
+.insight-label{font-size:10px;font-weight:900;color:var(--muted);margin-bottom:2px}
+
+/* AI Teacher chat */
+.chat-wrap{display:flex;flex-direction:column;gap:10px;margin-bottom:10px}
+.chat-bubble{max-width:85%;padding:11px 14px;border-radius:18px;font-size:13px;font-weight:700;line-height:1.55;animation:bubblePop .25s ease}
+@keyframes bubblePop{0%{transform:scale(.9);opacity:0}100%{transform:scale(1);opacity:1}}
+.chat-bubble.ai{background:linear-gradient(135deg,#667EEA22,#764BA222);border:1.5px solid #764BA233;border-bottom-left-radius:4px;align-self:flex-start}
+.chat-bubble.user{background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;border-bottom-right-radius:4px;align-self:flex-end}
+.chat-bubble.ai .ai-avatar{font-size:18px;margin-bottom:4px}
+.chat-input-row{display:flex;gap:8px;align-items:flex-end;position:sticky;bottom:0;background:var(--bg);padding:10px 0 4px}
+.chat-input{flex:1;padding:10px 14px;border-radius:16px;border:2px solid #eee;font-size:13px;font-weight:700;resize:none;min-height:44px;max-height:100px;line-height:1.4;background:#fff}
+.chat-input:focus{outline:none;border-color:var(--purple)}
+.chat-send{padding:10px 16px;border-radius:14px;border:none;background:linear-gradient(135deg,#667EEA,#764BA2);color:#fff;font-size:16px;cursor:pointer;transition:all .2s;flex-shrink:0}
+.chat-send:hover{transform:scale(1.08)}
+.chat-send:disabled{opacity:.4;cursor:default}
+.quick-prompts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.quick-btn{padding:6px 12px;border-radius:14px;border:1.5px solid var(--purple);background:#F0E5FF;color:var(--purple);font-size:11px;font-weight:800;cursor:pointer;transition:all .2s}
+.quick-btn:hover{background:var(--purple);color:#fff}
+.typing-indicator{display:flex;gap:4px;align-items:center;padding:8px 12px}
+.typing-dot{width:8px;height:8px;border-radius:50%;background:var(--purple);animation:typingDot 1.2s ease-in-out infinite}
+.typing-dot:nth-child(2){animation-delay:.2s}
+.typing-dot:nth-child(3){animation-delay:.4s}
+@keyframes typingDot{0%,60%,100%{transform:translateY(0);opacity:.4}30%{transform:translateY(-6px);opacity:1}}
+.generated-quiz{background:#fff;border:2px solid var(--purple);border-radius:14px;padding:12px;margin-top:8px}
+.gq-title{font-size:12px;font-weight:900;color:var(--purple);margin-bottom:8px}
+
+/* Speech / Voice */
+.voice-card{background:#fff;border-radius:18px;padding:20px;box-shadow:0 3px 14px rgba(0,0,0,.09);margin-bottom:12px;text-align:center}
+.mic-btn{width:80px;height:80px;border-radius:50%;border:none;background:linear-gradient(135deg,var(--red),var(--orange));color:#fff;font-size:34px;cursor:pointer;transition:all .3s;box-shadow:0 6px 20px rgba(231,76,60,.4);margin:14px auto;display:flex;align-items:center;justify-content:center}
+.mic-btn:hover{transform:scale(1.08)}
+.mic-btn.listening{background:linear-gradient(135deg,#E74C3C,#C0392B);animation:micPulse 1s ease-in-out infinite;box-shadow:0 0 0 0 rgba(231,76,60,.6)}
+@keyframes micPulse{0%{box-shadow:0 0 0 0 rgba(231,76,60,.6)}70%{box-shadow:0 0 0 16px rgba(231,76,60,0)}100%{box-shadow:0 0 0 0 rgba(231,76,60,0)}}
+.voice-status{font-size:14px;font-weight:800;color:var(--muted);margin-bottom:8px}
+.voice-transcript{font-size:18px;font-weight:900;color:var(--text);min-height:30px;padding:10px;background:#F8F8FF;border-radius:12px;margin:8px 0}
+.speak-btn{padding:10px 22px;border-radius:14px;border:none;background:linear-gradient(135deg,var(--blue),var(--purple));color:#fff;font-size:14px;font-weight:800;cursor:pointer;transition:all .2s;margin:4px}
+.speak-btn:hover{transform:translateY(-2px)}
+.speak-btn:disabled{opacity:.4;cursor:default}
+.voice-q-display{font-size:26px;font-weight:900;color:var(--text);text-align:center;padding:14px;background:linear-gradient(135deg,#667EEA11,#764BA211);border-radius:14px;margin:10px 0;border:2px solid #764BA222}
+.voice-feedback{font-size:16px;font-weight:800;min-height:26px;text-align:center;margin-top:8px}
+.waveform{display:flex;align-items:center;gap:3px;justify-content:center;height:36px;margin:8px 0}
+.wave-bar{width:4px;border-radius:4px;background:var(--purple);animation:waveAnim 1s ease-in-out infinite}
+@keyframes waveAnim{0%,100%{height:6px}50%{height:28px}}
+.tts-speed-row{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:8px}
+.tts-speed-btn{padding:6px 14px;border-radius:12px;border:2px solid #eee;background:#fff;font-size:12px;font-weight:800;color:var(--muted);cursor:pointer;transition:all .2s}
+.tts-speed-btn.active{border-color:var(--blue);background:#E0EEFF;color:var(--blue)}
+
+</style>
+</head>
+<body>
+
+<!-- WELCOME -->
+<div id="screen-welcome" class="screen active">
+  <div class="w-bubbles" id="wBubbles"></div>
+  <div class="w-logo">🌟</div>
+  <div class="w-title">數學樂園</div>
+  <div class="w-sub">台灣國小互動數學教學平台 v2</div>
+  <div class="char-parade" id="charParade"></div>
+  <div class="profile-section">
+    <div class="profile-title">📚 選擇你的角色</div>
+    <div class="profile-grid" id="profileGrid"></div>
+    <button class="new-btn" onclick="showModal('newProfile')">＋ 新增小朋友</button>
+    <button class="enter-btn" onclick="enterApp()">開始學習 🚀</button>
+    <div class="parent-link" onclick="showModal('pw')">👨‍👩‍👧 家長 / 老師後台</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="screen-app" class="screen">
+  <div class="topbar"><div class="topbar-inner">
+    <div class="tb-avatar" id="tbAvatar">🐼</div>
+    <div><div class="tb-name" id="tbName">小明</div><div class="tb-stars" id="tbStars">⭐0星</div></div>
+    <button class="tb-home" onclick="goHome()">🏠</button>
+  </div></div>
+  <div class="grade-bar" id="gradeBar"></div>
+  <div class="topics-grid" id="topicsGrid"></div>
+  <div class="activity-zone">
+    <div class="az-header">
+      <span class="az-icon" id="azIcon">🧱</span>
+      <span class="az-title" id="azTitle">數字積木</span>
+      <span class="az-badge" id="azBadge">一年級</span>
+    </div>
+    <div id="azContent"></div>
+  </div>
+  <div class="bottom-nav">
+    <button class="bn-btn active" id="nav-learn" onclick="setNav('learn')"><span class="bn-icon">📖</span>學習</button>
+    <button class="bn-btn" id="nav-race" onclick="setNav('race')"><span class="bn-icon">🏎️</span>賽跑</button>
+    <button class="bn-btn" id="nav-memory" onclick="setNav('memory')"><span class="bn-icon">🃏</span>卡牌</button>
+    <button class="bn-btn" id="nav-progress" onclick="setNav('progress')"><span class="bn-icon">📊</span>成就</button>
+  </div>
+</div>
+
+<!-- PARENT -->
+<div id="screen-parent" class="screen">
+  <div class="parent-header">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button onclick="goHome()" style="padding:6px 13px;border-radius:10px;border:none;background:rgba(255,255,255,.2);color:#fff;font-size:12px;font-weight:800;cursor:pointer">← 返回</button>
+      <div><div class="ph-title">👨‍🏫 家長/老師後台</div><div class="ph-sub">學習紀錄與深度分析</div></div>
+    </div>
+  </div>
+  <div class="parent-body" id="parentBody"></div>
+</div>
+
+<!-- MODALS -->
+<div id="modal-pw" class="overlay hidden">
+  <div class="modal-box" style="text-align:center">
+    <div class="modal-title">🔒 家長驗證</div>
+    <p style="font-size:13px;color:var(--muted);font-weight:700;margin-bottom:14px">請輸入家長密碼（預設：1234）</p>
+    <input type="password" id="pwInput" class="pw-input" maxlength="8" placeholder="••••">
+    <div style="display:flex;gap:8px">
+      <button onclick="checkPw()" style="flex:1;padding:10px;border-radius:12px;border:none;background:var(--blue);color:#fff;font-size:14px;font-weight:800;cursor:pointer">確認</button>
+      <button onclick="hideModal('pw')" style="flex:1;padding:10px;border-radius:12px;border:none;background:#F0F0F0;color:#666;font-size:14px;font-weight:800;cursor:pointer">取消</button>
+    </div>
+  </div>
+</div>
+<div id="modal-newProfile" class="overlay hidden">
+  <div class="modal-box">
+    <div class="modal-title">🌟 新增小朋友</div>
+    <input type="text" id="newName" class="modal-input" placeholder="輸入姓名" maxlength="8">
+    <div style="font-size:12px;font-weight:800;color:var(--muted);margin-bottom:8px">選擇頭像：</div>
+    <div class="avatar-pick" id="avatarPick"></div>
+    <select id="newGrade" style="width:100%;padding:10px;border-radius:12px;border:2.5px solid #eee;font-size:14px;font-weight:700;margin-bottom:14px;color:var(--text)">
+      <option value="1">一年級</option><option value="2">二年級</option><option value="3">三年級</option>
+      <option value="4">四年級</option><option value="5">五年級</option><option value="6">六年級</option>
+    </select>
+    <button class="modal-ok" onclick="createProfile()">建立角色 🎉</button>
+    <button class="modal-cancel" onclick="hideModal('newProfile')">取消</button>
+  </div>
+</div>
+
+<script>
+
+/* === CONSTANTS === */
+const AVATARS=['🐼','🐯','🦊','🐸','🐧','🦁','🐮','🐰','🐻','🦋','🐙','🦄'];
+const GRADE_COLORS=['#E74C3C','#E67E22','#D4A000','#1E9E50','#1A6EC0','#7B3EBB'];
+const BLOCK_COLS=['','#E74C3C','#E67E22','#D4A000','#2ECC71','#3498DB','#9B59B6','#E91E8C','#1ABC9C','#E74C3C','#2C3E50'];
+const GRADE_NAMES=['一','二','三','四','五','六'];
+const rf=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const bc=(n)=>BLOCK_COLS[Math.min(Math.max(n,1),10)];
+const gc=(g)=>GRADE_COLORS[g-1]||'#888';
+const gcd=(a,b)=>b===0?a:gcd(b,a%b);
+
+function showToast(msg){
+  const t=document.createElement('div');t.className='toast';t.textContent=msg;
+  document.body.appendChild(t);setTimeout(()=>t.remove(),2200);
+}
+
+/* === DATA === */
+function defaultDB(){
+  return{
+    profiles:[
+      {id:'p1',name:'小明',avatar:'🐼',grade:1,stars:12,xp:340,level:3,
+       streak:{current:3,max:7,lastDate:''},
+       activity:[
+         {date:'2024-01-10',topic:'加法',correct:8,total:10,time:45},
+         {date:'2024-01-11',topic:'積木',correct:10,total:10,time:28},
+         {date:'2024-01-12',topic:'時鐘',correct:7,total:10,time:55},
+         {date:'2024-01-13',topic:'加法',correct:9,total:10,time:38},
+       ],
+       topicStats:{加法:{c:34,t:40},積木:{c:30,t:30},時鐘:{c:14,t:20}},
+       progress:{1:78,2:22,3:0,4:0,5:0,6:0},
+       badges:['first','streak3'],
+       memBest:{easy:null,medium:null,hard:null},raceBest:null,newBadges:[]},
+      {id:'p2',name:'小美',avatar:'🦋',grade:2,stars:20,xp:620,level:5,
+       streak:{current:5,max:12,lastDate:''},
+       activity:[
+         {date:'2024-01-11',topic:'乘法',correct:9,total:10,time:42},
+         {date:'2024-01-12',topic:'除法',correct:8,total:10,time:50},
+       ],
+       topicStats:{乘法:{c:45,t:50},除法:{c:32,t:40}},
+       progress:{1:95,2:60,3:15,4:0,5:0,6:0},
+       badges:['first','streak3','streak7','speed','memory_easy'],
+       memBest:{easy:12,medium:null,hard:null},raceBest:{score:82,time:68},newBadges:[]}
+    ],
+    parentPassword:'1234',currentProfile:'p1'
+  };
+}
+function loadDB(){try{return JSON.parse(localStorage.getItem('mathLandV2')||'null')||defaultDB()}catch{return defaultDB()}}
+function saveDB(){localStorage.setItem('mathLandV2',JSON.stringify(DB))}
+let DB=loadDB();
+let CP=DB.profiles.find(p=>p.id===DB.currentProfile)||DB.profiles[0];
+let currentGrade=1,currentMode='blocks',currentNav='learn';
+
+/* === WELCOME === */
+(()=>{
+  const b=document.getElementById('wBubbles');
+  [[180,'#FF6B6B'],[140,'#3498DB'],[100,'#2ECC71'],[120,'#FFC947'],[90,'#9B59B6']].forEach(([s,c])=>{
+    const el=document.createElement('div');el.className='w-bubble';
+    el.style.cssText=`width:${s}px;height:${s}px;background:${c};top:${rf(0,85)}%;left:${rf(0,85)}%`;
+    b.appendChild(el);
+  });
+  const p=document.getElementById('charParade');
+  [1,2,3,4,5,6,7,8].forEach((n,i)=>{
+    const el=document.createElement('div');el.className='char-block';
+    el.style.cssText=`background:${bc(n)};animation-delay:${i*.1}s`;
+    el.textContent=n<=7?n:'×';p.appendChild(el);
+  });
+  renderProfiles();
+})();
+
+function renderProfiles(){
+  document.getElementById('profileGrid').innerHTML=DB.profiles.map(p=>`
+    <div class="profile-card ${p.id===CP?.id?'selected':''}" onclick="selectProfile('${p.id}')">
+      <div class="pc-avatar">${p.avatar}</div>
+      <div class="pc-name">${p.name}</div>
+      <div class="pc-stars">Lv.${p.level||1}  ⭐${p.stars}</div>
+    </div>`).join('');
+}
+function selectProfile(id){CP=DB.profiles.find(p=>p.id===id);DB.currentProfile=id;saveDB();renderProfiles()}
+
+let chosenAvatar=AVATARS[0];
+function showModal(name){
+  document.getElementById('modal-'+name).classList.remove('hidden');
+  if(name==='newProfile'){
+    document.getElementById('avatarPick').innerHTML=AVATARS.map((a,i)=>
+      `<div class="avatar-opt ${i===0?'selected':''}" onclick="pickAv(this,'${a}')">${a}</div>`).join('');
+    chosenAvatar=AVATARS[0];
+  }
+  if(name==='pw')document.getElementById('pwInput').value='';
+}
+function hideModal(name){document.getElementById('modal-'+name).classList.add('hidden')}
+function pickAv(el,a){document.querySelectorAll('.avatar-opt').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');chosenAvatar=a;}
+function createProfile(){
+  const name=document.getElementById('newName').value.trim()||'新同學';
+  const grade=+document.getElementById('newGrade').value;
+  const p={id:'p'+Date.now(),name,avatar:chosenAvatar,grade,stars:0,xp:0,level:1,
+    streak:{current:0,max:0,lastDate:''},activity:[],topicStats:{},
+    progress:{1:0,2:0,3:0,4:0,5:0,6:0},badges:[],memBest:{easy:null,medium:null,hard:null},
+    raceBest:null,newBadges:[]};
+  DB.profiles.push(p);CP=p;DB.currentProfile=p.id;saveDB();hideModal('newProfile');renderProfiles();
+}
+function enterApp(){
+  if(!CP)return;
+  currentGrade=CP.grade||1;
+  document.getElementById('tbAvatar').textContent=CP.avatar;
+  document.getElementById('tbName').textContent=CP.name;
+  updateTopBar();showScreen('app');
+  renderGradeBar();renderTopics();setMode(GRADE_TOPICS[currentGrade][0]);
+}
+function goHome(){showScreen('welcome');renderProfiles()}
+function showScreen(n){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById('screen-'+n).classList.add('active')}
+function updateTopBar(){document.getElementById('tbStars').textContent=`⭐${CP.stars} Lv.${CP.level||1} 🔥${CP.streak?.current||0}`}
+
+/* === GRADE/TOPIC/NAV === */
+const GRADE_TOPICS={
+  1:[{icon:'🧱',name:'數字積木',mode:'blocks'},{icon:'➕',name:'加減法',mode:'add10'},{icon:'📏',name:'比大小',mode:'compare'}],
+  2:[{icon:'🔢',name:'加減到100',mode:'add100'},{icon:'✖️',name:'乘法2和5',mode:'mult25'},{icon:'🕐',name:'認識時鐘',mode:'clock'}],
+  3:[{icon:'✖️',name:'乘法表',mode:'multtable'},{icon:'➗',name:'除法',mode:'divide'},{icon:'🍕',name:'分數視覺化',mode:'fraction'}],
+  4:[{icon:'🔣',name:'四則運算',mode:'fourop'},{icon:'📐',name:'幾何圖形',mode:'geometry'},{icon:'🔁',name:'因數倍數',mode:'factor'}],
+  5:[{icon:'🧮',name:'小數運算',mode:'decimal'},{icon:'📊',name:'分數四則',mode:'frac4op'},{icon:'📦',name:'體積容積',mode:'volume'}],
+  6:[{icon:'🔣',name:'比與比值',mode:'ratio'},{icon:'📈',name:'百分比',mode:'percent'},{icon:'🔷',name:'進階幾何',mode:'geometry6'}],
+};
+function renderGradeBar(){
+  document.getElementById('gradeBar').innerHTML=GRADE_NAMES.map((n,i)=>
+    `<button class="gb-btn g${i+1} ${i+1===currentGrade?'active':''}" onclick="setGrade(${i+1})">${n}年級</button>`).join('');
+}
+function setGrade(g){currentGrade=g;renderGradeBar();renderTopics();setMode(GRADE_TOPICS[g][0])}
+function renderTopics(){
+  const color=gc(currentGrade);
+  document.getElementById('topicsGrid').innerHTML=GRADE_TOPICS[currentGrade].map((t,i)=>
+    `<div class="topic-card ${i===0?'active':''}" style="--accent:${color}" id="tc${i}" onclick="selTopic(${i})">
+      <div class="tc-icon">${t.icon}</div><div class="tc-name">${t.name}</div></div>`).join('');
+}
+function selTopic(i){
+  document.querySelectorAll('.topic-card').forEach((c,j)=>c.classList.toggle('active',j===i));
+  setMode(GRADE_TOPICS[currentGrade][i]);
+}
+function setMode(topic){
+  currentMode=topic.mode;
+  document.getElementById('azIcon').textContent=topic.icon;
+  document.getElementById('azTitle').textContent=topic.name;
+  document.getElementById('azBadge').textContent=GRADE_NAMES[currentGrade-1]+'年級';
+  const az=document.getElementById('azContent');az.innerHTML='';renderActivity(az);
+}
+function setNav(n){
+  currentNav=n;
+  document.querySelectorAll('.bn-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('nav-'+n).classList.add('active');
+  const az=document.getElementById('azContent');az.innerHTML='';
+  if(n==='learn')renderActivity(az);
+  else if(n==='race')renderRaceLobby(az);
+  else if(n==='memory')renderMemoryLobby(az);
+  else renderProgressHub(az);
+}
+function renderActivity(el){
+  ({blocks:renderBlocks,add10:renderQuiz,compare:renderCompare,add100:renderQuiz,
+    mult25:renderQuiz,clock:renderClock,multtable:renderMulTable,divide:renderQuiz,
+    fraction:renderFraction,fourop:renderQuiz,geometry:renderGeometry,factor:renderQuiz,
+    decimal:renderQuiz,frac4op:renderQuiz,volume:renderQuiz,ratio:renderQuiz,
+    percent:renderQuiz,geometry6:renderGeometry6}[currentMode]||renderQuiz)(el);
+}
+
+/* === QUIZ ENGINE === */
+const QUIZ_GENS={
+  add10:()=>{const a=rf(1,5),b=rf(1,5);return{q:`${a} + ${b} = ?`,ans:a+b,...mc4(a+b,1,10)}},
+  add100:()=>{const a=rf(10,45),b=rf(10,45);return{q:`${a} + ${b} = ?`,ans:a+b,...mc4(a+b,5,100)}},
+  mult25:()=>{const b=[2,5][rf(0,1)],n=rf(1,9);return{q:`${b} × ${n} = ?`,ans:b*n,...mc4(b*n,1,50)}},
+  divide:()=>{const b=rf(2,5),n=rf(1,9);return{q:`${b*n} ÷ ${b} = ?`,ans:n,...mc4(n,1,9)}},
+  fourop:()=>{const a=rf(10,20),b=rf(2,5),c=rf(1,4);return{q:`${a} + ${b} × ${c} = ?`,ans:a+b*c,...mc4(a+b*c,1,50)}},
+  factor:()=>{const pairs=[[2,3,6],[3,4,12],[4,5,20],[2,6,12],[3,5,15]];const[a,b,ans]=pairs[rf(0,4)];return{q:`${a}和${b}的最小公倍數？`,ans,...mc4(ans,1,30)}},
+  decimal:()=>{const a=rf(10,90)/10,b=rf(5,50)/10;const ans=Math.round((a+b)*10)/10;const r=mc4(ans*10,5,200);return{q:`${a}+${b}=?`,ans,choices:r.choices.map(v=>v/10),answer:r.answer}},
+  frac4op:()=>{const d=rf(3,6),n1=rf(1,d-1),n2=rf(1,d-1);return{q:`${n1}/${d}+${n2}/${d}=?/${d}`,ans:n1+n2,...mc4(n1+n2,1,d*2)}},
+  volume:()=>{const l=rf(2,5),w=rf(2,5),h=rf(2,5);return{q:`${l}×${w}×${h}體積=？`,ans:l*w*h,...mc4(l*w*h,4,200)}},
+  ratio:()=>{const a=rf(2,5),b=rf(2,5),g=gcd(a,b);return{q:`${a}:${b}最簡前項？`,ans:a/g,...mc4(a/g,1,5)}},
+  percent:()=>{const p=[10,20,25,50,75][rf(0,4)];return{q:`0.${p<10?'0'+p:p}=?%`,ans:p,...mc4(p,1,100)}},
+};
+function mc4(ans,mn,mx){
+  const arr=[ans];let t=0;
+  while(arr.length<4&&t++<60){const v=ans+(Math.random()<.5?1:-1)*rf(1,Math.max(Math.ceil(Math.abs(ans)*.3),3));if(v>=mn&&v<=mx&&!arr.includes(v))arr.push(v);}
+  while(arr.length<4)arr.push(arr[arr.length-1]+arr.length);
+  arr.sort(()=>Math.random()-.5);return{choices:arr,answer:arr.indexOf(ans)};
+}
+let qScore=0,qTotal=0;
+function renderQuiz(el){qScore=0;qTotal=0;nextQuiz(el)}
+function nextQuiz(el){
+  const{q,choices,answer}=(QUIZ_GENS[currentMode]||QUIZ_GENS.add10)();
+  el.innerHTML=`
+    <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+      <span class="score-pill">✅ ${qScore}/${qTotal}</span>
+    </div>
+    <div class="big-q">${q}</div>
+    <div class="ans-grid">${choices.map((c,i)=>`<button class="ans-btn" onclick="checkQ(${i},${answer},this)">${c}</button>`).join('')}</div>
+    <div class="feedback-msg" id="qFb"></div>
+    <button class="next-btn hidden" id="qNext" onclick="nextQuiz(document.getElementById('azContent'))">下一題 →</button>
+    <div style="display:flex;gap:4px;margin-top:8px" id="qStars"></div>`;
+}
+function checkQ(i,ans,btn){
+  document.querySelectorAll('.ans-btn').forEach(b=>b.style.pointerEvents='none');
+  const ok=i===ans;btn.classList.add(ok?'correct':'wrong');
+  if(!ok)document.querySelectorAll('.ans-btn')[ans].classList.add('correct');
+  qTotal++;
+  if(ok){qScore++;document.getElementById('qStars').innerHTML='<span class="star-anim">⭐</span><span class="star-anim" style="animation-delay:.08s">⭐</span><span class="star-anim" style="animation-delay:.16s">⭐</span>';awardStar();}
+  document.getElementById('qFb').innerHTML=ok?'<span class="feedback-good">🎉 答對了！</span>':'<span class="feedback-bad">😅 再加油！</span>';
+  document.getElementById('qNext').classList.remove('hidden');
+  logActivity(currentMode,ok?1:0,1,0);
+}
+
+/* === LEARNING ACTIVITIES === */
+function renderBlocks(el){
+  el.innerHTML=`<p style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:8px">點擊積木看數字！按+或−做加減法！</p>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin:8px 0">
+      ${[1,2,3,4,5,6,7,8,9,10].map(n=>`<div style="width:38px;height:38px;border-radius:10px;background:${bc(n)};display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:900;color:#fff;cursor:pointer;box-shadow:0 3px 0 rgba(0,0,0,.12);transition:all .15s" id="blk${n}" onclick="blkTap(${n})" onmouseover="this.style.transform='translateY(-3px) scale(1.1)'" onmouseout="this.style.transform=''">${n}</div>`).join('')}
+    </div>
+    <div style="min-height:32px;display:flex;flex-wrap:wrap;gap:3px;margin:6px 0" id="bViz"></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px">
+      <button style="padding:8px 16px;border-radius:12px;border:none;background:var(--green);color:#fff;font-size:18px;font-weight:900;cursor:pointer" onclick="blkOp('add')">+</button>
+      <button style="padding:8px 16px;border-radius:12px;border:none;background:var(--red);color:#fff;font-size:18px;font-weight:900;cursor:pointer" onclick="blkOp('sub')">－</button>
+      <button style="padding:8px 16px;border-radius:12px;border:none;background:#ECF0F1;color:#666;font-size:14px;font-weight:900;cursor:pointer" onclick="renderBlocks(document.getElementById('azContent'))">重置</button>
+    </div>
+    <div id="bExpr" style="margin-top:10px;min-height:52px"></div>
+    <div style="display:flex;gap:4px;margin-top:8px" id="bStars"></div>`;
+}
+let bFirst=null,bMode=null;
+function blkTap(n){
+  if(!bMode){bFirst=n;document.querySelectorAll('[id^=blk]').forEach(b=>b.style.outline='');
+    document.getElementById('blk'+n).style.outline='3px solid #333';
+    document.getElementById('bViz').innerHTML=Array.from({length:Math.min(n,10)},(_,i)=>`<div style="width:26px;height:26px;border-radius:6px;background:${bc(n)};display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;font-weight:900;animation:bounce ${.4+i*.05}s ease">●</div>`).join('');
+    document.getElementById('bExpr').innerHTML='';document.getElementById('bStars').innerHTML='';return;}
+  if(bFirst===null)return;
+  const res=bMode==='add'?bFirst+n:bFirst-n;const op=bMode==='add'?'+':'－';
+  if(res<0||res>20){document.getElementById('bExpr').innerHTML='<span style="color:var(--red);font-size:13px;font-weight:800">超出範圍！</span>';bMode=null;return;}
+  const rc=res>0?bc(Math.min(res,10)):'#aaa';
+  document.getElementById('bExpr').innerHTML=`<div style="display:flex;align-items:center;gap:8px;padding:10px 12px;background:#F8F8FF;border-radius:12px;flex-wrap:wrap">
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:10px;background:${bc(bFirst)};color:#fff;font-size:20px;font-weight:900">${bFirst}</span>
+    <span style="color:#aaa;font-size:20px;font-weight:900">${op}</span>
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:10px;background:${bc(n)};color:#fff;font-size:20px;font-weight:900">${n}</span>
+    <span style="color:#aaa;font-size:20px;font-weight:900">=</span>
+    <span style="display:inline-flex;align-items:center;justify-content:center;width:42px;height:42px;border-radius:10px;background:${rc};color:#fff;font-size:20px;font-weight:900">${res}</span>
+  </div>`;
+  document.getElementById('bViz').innerHTML=Array.from({length:Math.min(res,10)},(_,i)=>`<div style="width:26px;height:26px;border-radius:6px;background:${rc};display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;font-weight:900;animation:bounce ${.4+i*.05}s ease">●</div>`).join('');
+  document.getElementById('bStars').innerHTML=Array.from({length:Math.min(res,5)},(_,i)=>`<span class="star-anim" style="animation-delay:${i*.08}s">⭐</span>`).join('');
+  bMode=null;bFirst=null;
+}
+function blkOp(op){bMode=op;document.getElementById('bExpr').innerHTML=`<div style="color:var(--muted);font-size:12px;font-weight:700">${op==='add'?'➕ 再選一個數字！':'➖ 再選一個數字！'}</div>`;}
+
+function renderCompare(el){
+  const a=rf(1,9);let b=rf(1,9);while(b===a)b=rf(1,9);
+  el.innerHTML=`<p style="font-size:13px;color:var(--muted);font-weight:700;margin-bottom:10px">哪個數字比較大？</p>
+    <div style="display:flex;align-items:center;justify-content:center;gap:24px;margin:10px 0">
+      <div onclick="cmpAns(${a},${a},${b})" style="width:72px;height:72px;border-radius:16px;background:${bc(a)};display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;color:#fff;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.12);transition:transform .2s" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform=''">${a}</div>
+      <span style="font-size:26px;font-weight:900;color:#ddd">VS</span>
+      <div onclick="cmpAns(${b},${a},${b})" style="width:72px;height:72px;border-radius:16px;background:${bc(b)};display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:900;color:#fff;cursor:pointer;box-shadow:0 4px 0 rgba(0,0,0,.12);transition:transform .2s" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform=''">${b}</div>
+    </div>
+    <div class="feedback-msg" id="cmpMsg"></div><div style="display:flex;gap:4px;margin-top:8px" id="cmpSt"></div>
+    <button class="next-btn hidden" id="cmpNext" onclick="renderCompare(document.getElementById('azContent'))">再一次 →</button>`;
+}
+function cmpAns(ch,a,b){
+  const correct=Math.max(a,b);
+  document.getElementById('cmpMsg').innerHTML=ch===correct?`<span class="feedback-good">🎊 答對！${correct} 比 ${Math.min(a,b)} 大！</span>`:'<span class="feedback-bad">再想想！'+correct+' 比較大喔！</span>';
+  if(ch===correct){document.getElementById('cmpSt').innerHTML='<span class="star-anim">⭐</span><span class="star-anim" style="animation-delay:.08s">⭐</span><span class="star-anim" style="animation-delay:.16s">⭐</span>';awardStar();}
+  document.getElementById('cmpNext').classList.remove('hidden');logActivity('compare',ch===correct?1:0,1,0);
+}
+
+function renderClock(el){
+  const h=rf(1,12),m=[0,15,30,45][rf(0,3)];
+  const toRad=d=>(d-90)*Math.PI/180;
+  const ha=(h%12+m/60)*30,ma=m*6;
+  const hx=60+28*Math.cos(toRad(ha)),hy=60+28*Math.sin(toRad(ha));
+  const mx=60+40*Math.cos(toRad(ma)),my=60+40*Math.sin(toRad(ma));
+  const ans=`${h}:${m.toString().padStart(2,'0')}`;
+  const opts=[ans];
+  [[h,15],[h,30],[h===12?1:h+1,0],[h===1?12:h-1,45]].forEach(([eh,em])=>{
+    const v=`${eh}:${em.toString().padStart(2,'0')}`;if(!opts.includes(v)&&opts.length<4)opts.push(v);});
+  while(opts.length<4)opts.push(`${rf(1,12)}:00`);opts.sort(()=>Math.random()-.5);
+  el.innerHTML=`<div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+    <svg width="110" height="110" viewBox="0 0 120 120">
+      <circle cx="60" cy="60" r="55" fill="#FFF9F0" stroke="#E67E22" stroke-width="4"/>
+      ${Array.from({length:12},(_,i)=>{const a=(i+1)*30,r=toRad(a+90),x=60+44*Math.cos(r),y=60+44*Math.sin(r);return`<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="central" font-size="10" font-weight="800" fill="#555" font-family="Nunito">${i+1}</text>`}).join('')}
+      <line x1="60" y1="60" x2="${hx}" y2="${hy}" stroke="#333" stroke-width="5" stroke-linecap="round"/>
+      <line x1="60" y1="60" x2="${mx}" y2="${my}" stroke="#E74C3C" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="60" cy="60" r="4" fill="#333"/>
+    </svg>
+    <div>
+      <div style="font-size:12px;font-weight:800;color:var(--muted);margin-bottom:8px">幾點幾分？</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        ${opts.map(o=>`<button class="ans-btn" style="font-size:16px" onclick="chkClock('${o}','${ans}',this)">${o}</button>`).join('')}
+      </div>
+      <div class="feedback-msg" id="clkMsg" style="margin-top:8px"></div>
+      <button class="next-btn hidden" id="clkNext" onclick="renderClock(document.getElementById('azContent'))">再一題 →</button>
+    </div>
+  </div>`;
+}
+function chkClock(ch,ans,btn){
+  document.querySelectorAll('.ans-btn').forEach(b=>b.style.pointerEvents='none');
+  const ok=ch===ans;btn.classList.add(ok?'correct':'wrong');
+  if(!ok)document.querySelectorAll('.ans-btn').forEach(b=>{if(b.textContent.trim()===ans)b.classList.add('correct')});
+  document.getElementById('clkMsg').innerHTML=ok?'<span class="feedback-good">🕐 答對！</span>':'<span class="feedback-bad">答案是 '+ans+'！</span>';
+  document.getElementById('clkNext').classList.remove('hidden');logActivity('clock',ok?1:0,1,0);
+}
+
+function renderMulTable(el){
+  el.innerHTML=`<p style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:8px">點擊格子練習乘法！</p>
+    <div style="overflow-x:auto"><table style="border-collapse:collapse;font-size:12px;font-weight:700;width:100%">
+      <tr><th style="padding:4px;color:#aaa">×</th>${[1,2,3,4,5,6,7,8,9].map(n=>`<th style="padding:4px;background:${bc(n)};color:#fff;border-radius:3px">${n}</th>`).join('')}</tr>
+      ${[1,2,3,4,5,6,7,8,9].map(r=>`<tr><th style="padding:4px;background:${bc(r)};color:#fff;border-radius:3px">${r}</th>
+        ${[1,2,3,4,5,6,7,8,9].map(c=>`<td style="padding:4px;text-align:center;cursor:pointer;border-radius:3px;transition:all .15s;font-size:11px" onmouseover="this.style.background='${bc(r)}33';this.style.transform='scale(1.2)'" onmouseout="this.style.background='';this.style.transform=''" onclick="showMul(${r},${c})">${r*c}</td>`).join('')}</tr>`).join('')}
+    </table></div>
+    <div id="mulMsg" style="margin-top:8px;font-size:15px;font-weight:800;min-height:26px"></div>`;
+}
+function showMul(a,b){document.getElementById('mulMsg').innerHTML=`<span style="color:${bc(a)}">${a}</span> × <span style="color:${bc(b)}">${b}</span> = <span style="color:var(--red);font-size:22px">${a*b}</span> 🎉`}
+
+function renderFraction(el){
+  const d=rf(2,6),n=rf(1,d-1);
+  const pie=(nd,dd)=>{const s=76,cx=s/2,cy=s/2,r=32;
+    return`<svg width="${s}" height="${s}" viewBox="0 0 ${s} ${s}">${Array.from({length:dd},(_,i)=>{
+      const a1=(i/dd)*2*Math.PI-Math.PI/2,a2=((i+1)/dd)*2*Math.PI-Math.PI/2;
+      const x1=cx+r*Math.cos(a1),y1=cy+r*Math.sin(a1),x2=cx+r*Math.cos(a2),y2=cy+r*Math.sin(a2);
+      const lg=(2*Math.PI/dd)>Math.PI?1:0;
+      return`<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${lg},1 ${x2},${y2} Z" fill="${i<nd?bc(i+1):'#eee'}" stroke="#fff" stroke-width="1.5"/>`;
+    }).join('')}<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#ddd" stroke-width="1.5"/></svg>`;};
+  const opts=[{n,d}];
+  [[n+1>d?1:n+1,d],[n,d===2?3:2],[1,d+1]].forEach(([on,od])=>{if(opts.length<3&&!(on===n&&od===d))opts.push({n:on,d:od})});
+  opts.sort(()=>Math.random()-.5);
+  el.innerHTML=`<p style="font-size:13px;color:var(--muted);font-weight:700;margin-bottom:8px">哪個圖代表 <b style="color:var(--red)">${n}/${d}</b>？</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;justify-content:center">
+      ${opts.map(o=>`<div style="text-align:center;cursor:pointer;padding:6px;border-radius:12px;transition:all .2s" onmouseover="this.style.transform='scale(1.06)'" onmouseout="this.style.transform=''" onclick="chkFrac(${o.n},${o.d},${n},${d},this)">${pie(o.n,o.d)}<div style="font-size:14px;font-weight:900;color:#555;margin-top:4px">${o.n}/${o.d}</div></div>`).join('')}
+    </div>
+    <div class="feedback-msg" id="fMsg"></div>
+    <button class="next-btn hidden" id="fNext" onclick="renderFraction(document.getElementById('azContent'))">再一題 →</button>`;
+}
+function chkFrac(cn,cd,an,ad,el){
+  document.querySelectorAll('[onclick^="chkFrac"]').forEach(p=>p.style.pointerEvents='none');
+  const ok=cn===an&&cd===ad;el.style.outline=`3px solid ${ok?'var(--green)':'var(--red)'}`;el.style.borderRadius='12px';
+  document.getElementById('fMsg').innerHTML=ok?'<span class="feedback-good">🎉 答對！</span>':`<span class="feedback-bad">答案是${an}/${ad}：分${ad}份塗${an}份</span>`;
+  document.getElementById('fNext').classList.remove('hidden');logActivity('fraction',ok?1:0,1,0);
+}
+
+function renderGeometry(el){
+  el.innerHTML=`<div style="text-align:center"><canvas id="gC" width="280" height="160" style="border-radius:12px;background:#F8F8FF;max-width:100%"></canvas></div>
+    <div style="display:flex;gap:6px;align-items:center;margin-top:8px;flex-wrap:wrap">
+      <select id="gS" style="padding:6px 8px;border-radius:10px;border:2px solid #eee;font-size:13px;font-weight:700" onchange="gUp()"><option value="rect">長方形</option><option value="tri">三角形</option><option value="circle">圓形</option></select>
+      <span style="font-size:11px;font-weight:800;color:var(--muted)" id="gL1">長：</span>
+      <input type="range" id="gP1" min="1" max="10" value="4" style="flex:1" oninput="gUp()">
+      <span id="gV1" style="font-size:13px;font-weight:800;min-width:18px">4</span>
+      <span style="font-size:11px;font-weight:800;color:var(--muted)" id="gL2">寬：</span>
+      <input type="range" id="gP2" min="1" max="10" value="3" style="flex:1" id="gP2Row" oninput="gUp()">
+      <span id="gV2" style="font-size:13px;font-weight:800;min-width:18px">3</span>
+    </div>
+    <div style="background:#F8F8FF;border-radius:12px;padding:10px;margin-top:8px;font-size:13px;font-weight:800;line-height:1.8" id="gRes"></div>`;
+  window.gUp=function(){
+    const s=document.getElementById('gS').value,p1=+document.getElementById('gP1').value,p2=+document.getElementById('gP2').value;
+    document.getElementById('gV1').textContent=p1;document.getElementById('gV2').textContent=p2;
+    document.getElementById('gL1').textContent=s==='circle'?'半徑：':s==='tri'?'底：':'長：';
+    document.getElementById('gL2').textContent=s==='tri'?'高：':'寬：';
+    const cv=document.getElementById('gC'),ctx=cv.getContext('2d');ctx.clearRect(0,0,280,160);ctx.lineWidth=3;
+    if(s==='rect'){const w=Math.min(p1*22,240),h=Math.min(p2*18,130),ox=(280-w)/2,oy=(160-h)/2;
+      ctx.fillStyle='rgba(52,152,219,.15)';ctx.fillRect(ox,oy,w,h);ctx.strokeStyle='#3498DB';ctx.strokeRect(ox,oy,w,h);
+      document.getElementById('gRes').innerHTML=`長方形　面積=${p1}×${p2}=<b style="color:var(--red)">${p1*p2}</b> cm²　周長=(${p1}+${p2})×2=<b style="color:var(--blue)">${(p1+p2)*2}</b> cm`;}
+    else if(s==='tri'){const bw=Math.min(p1*24,240),ht=Math.min(p2*16,130),ox=(280-bw)/2,oy=(160-ht)/2;
+      ctx.beginPath();ctx.moveTo(ox,oy+ht);ctx.lineTo(ox+bw,oy+ht);ctx.lineTo(ox+bw/2,oy);ctx.closePath();
+      ctx.fillStyle='rgba(46,204,113,.15)';ctx.fill();ctx.strokeStyle='#2ECC71';ctx.stroke();
+      document.getElementById('gRes').innerHTML=`三角形　面積=底×高÷2=${p1}×${p2}÷2=<b style="color:var(--green)">${p1*p2/2}</b> cm²`;}
+    else{const rad=Math.min(p1*14,65);ctx.beginPath();ctx.arc(140,80,rad,0,2*Math.PI);
+      ctx.fillStyle='rgba(231,76,60,.15)';ctx.fill();ctx.strokeStyle='#E74C3C';ctx.stroke();
+      document.getElementById('gRes').innerHTML=`圓形(π=3.14)　面積=πr²=<b style="color:var(--red)">${(p1*p1*3.14).toFixed(2)}</b> cm²　周長=2πr=<b style="color:var(--blue)">${(2*p1*3.14).toFixed(2)}</b> cm`;}
+  };gUp();
+}
+
+function renderGeometry6(el){
+  el.innerHTML=`<canvas id="g6C" width="280" height="160" style="border-radius:12px;background:#F8F8FF;max-width:100%;display:block;margin:0 auto 8px"></canvas>
+    <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+      <select id="g6S" style="padding:6px 8px;border-radius:10px;border:2px solid #eee;font-size:13px;font-weight:700" onchange="g6Up()"><option value="trap">梯形</option><option value="rhom">菱形</option><option value="sec">扇形</option></select>
+      <input type="range" id="g6P1" min="1" max="10" value="3" style="flex:1" oninput="g6Up()"><span id="g6V1" style="min-width:18px;font-size:13px;font-weight:800">3</span>
+      <input type="range" id="g6P2" min="1" max="10" value="6" style="flex:1" oninput="g6Up()"><span id="g6V2" style="min-width:18px;font-size:13px;font-weight:800">6</span>
+      <input type="range" id="g6P3" min="1" max="10" value="4" style="flex:1" oninput="g6Up()"><span id="g6V3" style="min-width:18px;font-size:13px;font-weight:800">4</span>
+    </div>
+    <div style="background:#F8F8FF;border-radius:12px;padding:10px;margin-top:8px;font-size:13px;font-weight:800;line-height:1.8" id="g6Res"></div>`;
+  window.g6Up=function(){
+    const s=document.getElementById('g6S').value,p1=+document.getElementById('g6P1').value,p2=+document.getElementById('g6P2').value,p3=+document.getElementById('g6P3').value;
+    ['g6V1','g6V2','g6V3'].forEach((id,i)=>document.getElementById(id).textContent=[p1,p2,p3][i]);
+    const cv=document.getElementById('g6C'),ctx=cv.getContext('2d');ctx.clearRect(0,0,280,160);ctx.lineWidth=3;
+    if(s==='trap'){const tw=p1*16,bw=p2*20,ht=Math.min(p3*14,120),bx=(280-bw)/2,ty=(160-ht)/2,tx=bx+(bw-tw)/2;
+      ctx.beginPath();ctx.moveTo(tx,ty);ctx.lineTo(tx+tw,ty);ctx.lineTo(bx+bw,ty+ht);ctx.lineTo(bx,ty+ht);ctx.closePath();
+      ctx.fillStyle='rgba(155,89,182,.15)';ctx.fill();ctx.strokeStyle='#9B59B6';ctx.stroke();
+      document.getElementById('g6Res').innerHTML=`梯形：面積=(${p1}+${p2})×${p3}÷2=<b style="color:var(--purple)">${((p1+p2)*p3/2).toFixed(1)}</b> cm²`;}
+    else if(s==='rhom'){const d1=Math.min(p1*20,230),d2=Math.min(p2*14,120);
+      ctx.beginPath();ctx.moveTo(140,80-d2/2);ctx.lineTo(140+d1/2,80);ctx.lineTo(140,80+d2/2);ctx.lineTo(140-d1/2,80);ctx.closePath();
+      ctx.fillStyle='rgba(231,76,60,.15)';ctx.fill();ctx.strokeStyle='#E74C3C';ctx.stroke();
+      document.getElementById('g6Res').innerHTML=`菱形：面積=對角線1×對角線2÷2=${p1}×${p2}÷2=<b style="color:var(--red)">${(p1*p2/2).toFixed(1)}</b> cm²`;}
+    else{const rad=Math.min(p1*12,62),ang=p2*36;
+      ctx.beginPath();ctx.moveTo(140,80);ctx.arc(140,80,rad,-Math.PI/2,-Math.PI/2+ang*Math.PI/180);ctx.closePath();
+      ctx.fillStyle='rgba(26,188,156,.2)';ctx.fill();ctx.strokeStyle='#1ABC9C';ctx.stroke();
+      document.getElementById('g6Res').innerHTML=`扇形(${ang}°)：面積=πr²×${ang}/360=<b style="color:#1ABC9C">${(3.14*p1*p1*ang/360).toFixed(2)}</b> cm²`;}
+  };g6Up();
+}
+
+/* ═══════════════════════
+   🏎️  NUMBER RACE GAME
+═══════════════════════ */
+const RACE_MODES=[
+  {id:'add',label:'加法賽',emoji:'➕',color:'#2ECC71',gen:()=>{const a=rf(1,9),b=rf(1,9);return{q:`${a} + ${b} = ?`,ans:a+b,mn:1,mx:18}}},
+  {id:'sub',label:'減法賽',emoji:'➖',color:'#E74C3C',gen:()=>{const a=rf(5,15),b=rf(1,a);return{q:`${a} − ${b} = ?`,ans:a-b,mn:0,mx:15}}},
+  {id:'mul',label:'乘法賽',emoji:'✖️',color:'#3498DB',gen:()=>{const a=rf(2,9),b=rf(2,9);return{q:`${a} × ${b} = ?`,ans:a*b,mn:2,mx:81}}},
+  {id:'mix',label:'混合賽',emoji:'🔣',color:'#9B59B6',gen:()=>{const ops=[()=>{const a=rf(1,9),b=rf(1,9);return{q:`${a}+${b}=?`,ans:a+b,mn:1,mx:18}},()=>{const a=rf(5,15),b=rf(1,a);return{q:`${a}−${b}=?`,ans:a-b,mn:0,mx:15}},()=>{const a=rf(2,5),b=rf(2,5);return{q:`${a}×${b}=?`,ans:a*b,mn:2,mx:25}}];return ops[rf(0,2)]()}},
+];
+const AI_RACERS=[{name:'阿草',emoji:'🐢',speed:.58},{name:'閃電',emoji:'⚡',speed:.50}];
+let raceState=null,raceTimer=null;
+
+function renderRaceLobby(el){
+  const best=CP.raceBest;
+  el.innerHTML=`
+    <div class="race-track">
+      <div class="race-stars-bg" id="raceBg"></div>
+      <div style="text-align:center;padding:16px 0;position:relative;z-index:1">
+        <div style="font-size:44px;margin-bottom:8px">🏎️</div>
+        <div style="font-size:17px;font-weight:900;color:#fff;margin-bottom:4px">數字大賽跑</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.7);font-weight:700;margin-bottom:${best?'6px':'14px'}">答對一題，賽車前進！搶先衝過終點線！</div>
+        ${best?`<div style="background:rgba(255,215,0,.2);border-radius:10px;padding:7px 14px;margin-bottom:12px;font-size:12px;font-weight:800;color:#FFD700;display:inline-block">🏆 最佳：${best.score}分 / ${best.time}秒</div><br>`:''}
+        <div style="font-size:13px;font-weight:800;color:rgba(255,255,255,.8);margin-bottom:8px">選擇比賽類型：</div>
+        <div class="race-mode-grid">
+          ${RACE_MODES.map(m=>`<button class="race-mode-btn" style="background:${m.color}" onclick="startRace('${m.id}')">${m.emoji} ${m.label}</button>`).join('')}
+        </div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap">
+          <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:8px 14px;font-size:12px;font-weight:800;color:rgba(255,255,255,.8)">📝 共20題</div>
+          <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:8px 14px;font-size:12px;font-weight:800;color:rgba(255,255,255,.8)">⏱ 5秒限時</div>
+          <div style="background:rgba(255,255,255,.1);border-radius:10px;padding:8px 14px;font-size:12px;font-weight:800;color:rgba(255,255,255,.8)">🔥 連擊加分</div>
+        </div>
+      </div>
+    </div>`;
+  spawnStars('raceBg');
+}
+
+function spawnStars(id){
+  const bg=document.getElementById(id);if(!bg)return;bg.innerHTML='';
+  for(let i=0;i<28;i++){const s=document.createElement('div');s.className='race-star';
+    s.style.cssText=`left:${rf(0,100)}%;top:${rf(0,100)}%;animation-delay:${rf(0,20)/10}s;animation-duration:${1.5+rf(0,20)/10}s`;bg.appendChild(s);}
+}
+
+function startRace(modeId){
+  const mode=RACE_MODES.find(m=>m.id===modeId);
+  raceState={mode,total:20,current:0,
+    scores:[10,10,10],// [player, ai1, ai2] in %
+    playerScore:0,playerStreak:0,maxStreak:0,
+    correctCount:0,startTime:Date.now(),answered:false,timerLeft:5};
+  showCountdown(3,()=>runRace());
+}
+
+function showCountdown(n,cb){
+  const el=document.getElementById('azContent');
+  el.innerHTML=`<div class="race-track" style="display:flex;align-items:center;justify-content:center;min-height:300px">
+    <div class="race-stars-bg" id="raceBg"></div>
+    <div class="countdown" style="position:relative;z-index:1">${n>0?n:'GO! 🚀'}</div>
+  </div>`;
+  spawnStars('raceBg');
+  if(n>0)setTimeout(()=>showCountdown(n-1,cb),800);else setTimeout(cb,500);
+}
+
+function runRace(){
+  if(!raceState||raceState.current>=raceState.total){endRace();return;}
+  clearInterval(raceTimer);raceState.timerLeft=5;raceState.answered=false;
+  const{q,ans,mn,mx}=raceState.mode.gen();raceState.currentQ={q,ans};
+  const ch=mc4(ans,mn,mx);
+
+  document.getElementById('azContent').innerHTML=`
+    <div class="race-track" style="position:relative;z-index:0">
+      <div class="race-stars-bg" id="raceBg"></div>
+      <div style="position:relative;z-index:1">
+        <div class="race-title">🏁 第${raceState.current+1}/${raceState.total}題
+          <span style="color:#FFD700;margin-left:8px">🔥${raceState.playerStreak}</span>
+          <span style="float:right;font-size:12px;color:rgba(255,255,255,.7)" id="rTimer">⏱5s</span>
+        </div>
+        ${[{name:'你',emoji:'🚀'},...AI_RACERS].map((r,i)=>`
+          <div class="track-lane">
+            <div class="racer-label">${r.emoji} ${r.name}</div>
+            <div class="track-finish">🏁</div>
+            <div class="racer" id="racer${i}" style="left:calc(${raceState.scores[i]}% * 0.82 + 4px)">${r.emoji}</div>
+          </div>`).join('')}
+        <div style="height:6px;background:rgba(255,255,255,.1);border-radius:6px;margin-bottom:10px;overflow:hidden">
+          <div id="rTimerBar" style="height:100%;background:linear-gradient(90deg,#2ECC71,#F1C40F,#E74C3C);width:100%;transition:width .1s;border-radius:6px"></div>
+        </div>
+        <div class="race-question">
+          <div class="race-q-text">${q}</div>
+          <div class="race-choices">${ch.choices.map((c,i)=>`<button class="race-choice" id="rc${i}" onclick="ansRace(${i},${ch.answer})">${c}</button>`).join('')}</div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
+          <span style="padding:4px 12px;border-radius:20px;background:rgba(255,215,0,.3);color:#FFD700;font-size:12px;font-weight:800">⭐ ${raceState.playerScore}</span>
+          <span style="padding:4px 12px;border-radius:20px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.8);font-size:12px;font-weight:800">✅ ${raceState.correctCount}/${raceState.current}</span>
+        </div>
+      </div>
+    </div>`;
+  spawnStars('raceBg');
+
+  raceTimer=setInterval(()=>{
+    raceState.timerLeft-=.1;
+    const pct=raceState.timerLeft/5*100;
+    const tb=document.getElementById('rTimerBar');if(tb)tb.style.width=pct+'%';
+    const ts=document.getElementById('rTimer');if(ts)ts.textContent='⏱'+Math.ceil(raceState.timerLeft)+'s';
+    if(raceState.timerLeft<=0){clearInterval(raceTimer);if(!raceState.answered){raceState.answered=true;raceState.playerStreak=0;moveAIs();raceState.current++;setTimeout(runRace,700);}}
+  },100);
+
+  // AI moves asynchronously
+  AI_RACERS.forEach((ai,i)=>{
+    const delay=rf(15,40)*100;
+    setTimeout(()=>{if(!raceState.answered&&Math.random()<ai.speed)moveAI(i+1);},delay);
+  });
+}
+
+function ansRace(i,correct){
+  if(raceState.answered)return;clearInterval(raceTimer);raceState.answered=true;
+  const ok=i===correct;
+  const btn=document.getElementById('rc'+i);if(btn)btn.classList.add(ok?'r-correct':'r-wrong');
+  if(!ok){const cb=document.getElementById('rc'+correct);if(cb)cb.classList.add('r-correct');}
+  if(ok){
+    raceState.playerStreak++;raceState.maxStreak=Math.max(raceState.maxStreak,raceState.playerStreak);
+    raceState.correctCount++;
+    const bonus=raceState.playerStreak>=3?raceState.playerStreak*2:raceState.playerStreak;
+    raceState.playerScore+=10+bonus;
+    movePlayer();awardStar();
+  }else raceState.playerStreak=0;
+  moveAIs();raceState.current++;setTimeout(runRace,800);
+}
+
+function movePlayer(){
+  const step=rf(4,9);raceState.scores[0]=Math.min(98,raceState.scores[0]+step);
+  const r=document.getElementById('racer0');if(r)r.style.left=`calc(${raceState.scores[0]}% * 0.82 + 4px)`;
+}
+function moveAI(i){
+  const step=rf(3,7);raceState.scores[i]=Math.min(98,raceState.scores[i]+step);
+  const r=document.getElementById('racer'+i);if(r)r.style.left=`calc(${raceState.scores[i]}% * 0.82 + 4px)`;
+}
+function moveAIs(){AI_RACERS.forEach((_,i)=>{if(Math.random()<.6)moveAI(i+1)});}
+
+function endRace(){
+  clearInterval(raceTimer);
+  const elapsed=Math.round((Date.now()-raceState.startTime)/1000);
+  const ps=raceState.scores[0],a1=raceState.scores[1],a2=raceState.scores[2];
+  const all=[{name:'你',score:ps,emoji:'🚀'},{name:AI_RACERS[0].name,score:a1,emoji:AI_RACERS[0].emoji},{name:AI_RACERS[1].name,score:a2,emoji:AI_RACERS[1].emoji}];
+  all.sort((a,b)=>b.score-a.score);
+  const rank=all.findIndex(s=>s.name==='你')+1;
+  const stars=rank===1?3:rank===2?2:1;
+
+  if(!CP.raceBest||raceState.playerScore>CP.raceBest.score){CP.raceBest={score:raceState.playerScore,time:elapsed};saveDB();}
+  if(rank===1)awardBadge('race_champ');
+  if(raceState.playerScore>=150)awardBadge('race_perfect');
+  logActivity('賽跑',raceState.correctCount,raceState.total,elapsed);
+
+  const podH=[70,100,50],podC=['#C0C0C0','#FFD700','#CD7F32'],podOrd=[1,0,2];
+  document.getElementById('azContent').innerHTML=`
+    <div class="race-track">
+      <div class="race-stars-bg" id="raceBg"></div>
+      <div style="position:relative;z-index:1;text-align:center;padding:10px 0">
+        <div style="font-size:36px;margin-bottom:6px">${rank===1?'🏆':rank===2?'🥈':'🥉'}</div>
+        <div style="font-size:18px;font-weight:900;color:#fff;margin-bottom:4px">${rank===1?'第一名！太棒了！':rank===2?'第二名！不錯！':'繼續加油！'}</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.7);font-weight:700;margin-bottom:8px">
+          得分：${raceState.playerScore} ｜ 答對${raceState.correctCount}/${raceState.total} ｜ ${elapsed}秒 ｜ 最長連擊${raceState.maxStreak}
+        </div>
+        <div style="font-size:24px;margin-bottom:12px">${'⭐'.repeat(stars)}</div>
+        <div class="podium">
+          ${podOrd.map((si,pi)=>{const s=all[si];return`<div class="podium-place">
+            <div class="podium-avatar">${s.emoji}</div>
+            <div class="podium-bar" style="height:${podH[pi]}px;background:${podC[pi]}">
+              <div style="font-size:14px;font-weight:900">${pi===1?'👑':pi===0?'2':'3'}</div>
+              <div style="font-size:10px">${s.name}</div>
+              <div style="font-size:10px">${s.score}%</div>
+            </div>
+          </div>`}).join('')}
+        </div>
+        <div style="display:flex;gap:8px;justify-content:center;margin-top:10px;flex-wrap:wrap">
+          <button class="restart-btn" onclick="renderRaceLobby(document.getElementById('azContent'))">再玩一次 🔄</button>
+          <button style="padding:11px 20px;border-radius:20px;border:none;background:rgba(255,255,255,.2);color:#fff;font-size:14px;font-weight:800;cursor:pointer" onclick="setNav('progress')">查看成就 📊</button>
+        </div>
+      </div>
+    </div>`;
+  spawnStars('raceBg');
+}
+
+/* ═══════════════════════
+   🃏  MEMORY CARD GAME
+═══════════════════════ */
+const MEM_SETS={
+  mul:{label:'乘法',pairs:[
+    {q:'2×3',a:'6'},{q:'4×5',a:'20'},{q:'3×7',a:'21'},{q:'6×6',a:'36'},
+    {q:'8×4',a:'32'},{q:'9×3',a:'27'},{q:'7×7',a:'49'},{q:'5×8',a:'40'},
+    {q:'9×9',a:'81'},{q:'6×7',a:'42'},{q:'7×8',a:'56'},{q:'4×9',a:'36'},
+  ]},
+  add:{label:'加減法',pairs:[
+    {q:'7+8',a:'15'},{q:'13-5',a:'8'},{q:'9+6',a:'15'},{q:'14-7',a:'7'},
+    {q:'8+9',a:'17'},{q:'16-8',a:'8'},{q:'6+7',a:'13'},{q:'11-4',a:'7'},
+    {q:'5+8',a:'13'},{q:'12-6',a:'6'},{q:'9+7',a:'16'},{q:'15-9',a:'6'},
+  ]},
+  frac:{label:'分數/百分比',pairs:[
+    {q:'1/2=?%',a:'50%'},{q:'1/4=?%',a:'25%'},{q:'3/4=?%',a:'75%'},{q:'1/5=?%',a:'20%'},
+    {q:'2/5=?%',a:'40%'},{q:'3/5=?%',a:'60%'},{q:'4/5=?%',a:'80%'},{q:'1/10=?%',a:'10%'},
+    {q:'3/10=?%',a:'30%'},{q:'7/10=?%',a:'70%'},{q:'1/3≈?%',a:'33%'},{q:'2/3≈?%',a:'67%'},
+  ]},
+};
+const MEM_LEVELS={
+  easy:{label:'簡單',pairs:6,gridClass:'mem-grid-3x4',cols:4},
+  medium:{label:'中等',pairs:8,gridClass:'mem-grid-4x4',cols:4},
+  hard:{label:'困難',pairs:10,gridClass:'mem-grid-4x5',cols:5},
+};
+let memState={cat:'mul',level:'easy',flipped:[],matched:0,moves:0,locked:false,startTime:null,hints:2,combo:0};
+
+function renderMemoryLobby(el){
+  el.innerHTML=`
+    <div style="margin-bottom:10px">
+      <div style="font-size:12px;font-weight:800;color:var(--muted);margin-bottom:6px">📚 題目類型</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${Object.entries(MEM_SETS).map(([k,v])=>`<button class="mem-category-btn ${k===memState.cat?'active':''}" onclick="setMemCat('${k}')">${v.label}</button>`).join('')}
+      </div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:12px;font-weight:800;color:var(--muted);margin-bottom:6px">🎯 難度</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${Object.entries(MEM_LEVELS).map(([k,v])=>{
+          const best=CP.memBest[k];
+          return`<button class="mem-level-btn ${k===memState.level?'active':''}" onclick="setMemLevel('${k}')">
+            ${v.label} (${v.pairs*2}張)${best?`<br><span style="font-size:10px;color:var(--green)">最佳${best}步</span>`:''}
+          </button>`;}).join('')}
+      </div>
+    </div>
+    <div style="background:#F8F8F8;border-radius:14px;padding:12px;margin-bottom:12px">
+      <div style="font-size:12px;font-weight:800;color:var(--muted);margin-bottom:8px">🏆 個人紀錄</div>
+      <div style="display:flex;gap:8px">
+        ${Object.entries(MEM_LEVELS).map(([k,v])=>`<div style="flex:1;text-align:center">
+          <div style="font-size:16px;font-weight:900;color:${CP.memBest[k]?'var(--green)':'var(--muted)'}">${CP.memBest[k]?CP.memBest[k]+'步':'—'}</div>
+          <div style="font-size:10px;font-weight:800;color:var(--muted)">${v.label}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <button class="enter-btn" onclick="startMemory(document.getElementById('azContent'))">開始遊戲 🃏</button>`;
+}
+function setMemCat(c){memState.cat=c;renderMemoryLobby(document.getElementById('azContent'))}
+function setMemLevel(l){memState.level=l;renderMemoryLobby(document.getElementById('azContent'))}
+
+function startMemory(el){
+  const lvl=MEM_LEVELS[memState.level];
+  const pool=[...MEM_SETS[memState.cat].pairs].sort(()=>Math.random()-.5).slice(0,lvl.pairs);
+  const cards=[];
+  pool.forEach((p,i)=>{
+    cards.push({id:'q'+i,label:p.q,sub:'題目',pair:i,type:'q'});
+    cards.push({id:'a'+i,label:p.a,sub:'答案',pair:i,type:'a'});
+  });
+  cards.sort(()=>Math.random()-.5);
+  memState={...memState,flipped:[],matched:0,moves:0,locked:false,startTime:Date.now(),hints:2,combo:0};
+
+  el.innerHTML=`
+    <div class="mem-header">
+      <span class="mem-pill" id="mPairs">配對 0/${lvl.pairs}</span>
+      <span class="mem-pill" id="mMoves">翻牌 0</span>
+      <span class="mem-pill" id="mTime">⏱ 0s</span>
+      <span class="mem-pill" id="mCombo" style="color:var(--orange)">連配 0</span>
+      <button class="hint-btn" id="hintBtn" onclick="useHint()">💡 提示(${memState.hints})</button>
+      <button style="padding:4px 10px;border-radius:14px;border:none;background:#FFE5CC;color:#D06000;font-size:11px;font-weight:800;cursor:pointer;margin-left:auto" onclick="renderMemoryLobby(document.getElementById('azContent'))">重選</button>
+    </div>
+    <div class="mem-stats-row">
+      <div class="mem-stat"><div class="mem-stat-num" id="mAcc">—</div><div class="mem-stat-label">準確率</div></div>
+      <div class="mem-stat"><div class="mem-stat-num" style="color:var(--blue)">${lvl.pairs}</div><div class="mem-stat-label">目標配對</div></div>
+      <div class="mem-stat"><div class="mem-stat-num" style="color:var(--purple)">${lvl.label}</div><div class="mem-stat-label">難度</div></div>
+    </div>
+    <div class="${lvl.gridClass}" id="memGrid">
+      ${cards.map(c=>`
+        <div class="mcard" id="mc${c.id}" onclick="flipCard('${c.id}',${c.pair},'${c.type}')">
+          <div class="mcard-inner">
+            <div class="mcard-front">❓</div>
+            <div class="mcard-back" style="color:${bc(c.pair+1)}">
+              <div style="font-size:${c.type==='q'?'12px':'18px'}">${c.label}</div>
+              <div class="card-q">${c.sub}</div>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>
+    <div id="memWin"></div>`;
+
+  clearInterval(window._memTimer);
+  window._memTimer=setInterval(()=>{
+    const el=document.getElementById('mTime');
+    if(el&&memState.startTime)el.textContent='⏱ '+Math.round((Date.now()-memState.startTime)/1000)+'s';
+  },1000);
+}
+
+function flipCard(id,pair,type){
+  if(memState.locked)return;
+  const card=document.getElementById('mc'+id);
+  if(!card||card.classList.contains('flipped')||card.classList.contains('matched'))return;
+  card.classList.add('flipped');
+  memState.flipped.push({id,pair,type});
+  if(memState.flipped.length===2){
+    memState.moves++;
+    const mEl=document.getElementById('mMoves');if(mEl)mEl.textContent='翻牌 '+memState.moves;
+    const aEl=document.getElementById('mAcc');if(aEl&&memState.moves>0)aEl.textContent=Math.round(memState.matched/memState.moves*100)+'%';
+    memState.locked=true;
+    const [a,b]=memState.flipped;
+    const lvlPairs=MEM_LEVELS[memState.level].pairs;
+    if(a.pair===b.pair&&a.type!==b.type){
+      setTimeout(()=>{
+        [a.id,b.id].forEach(id=>document.getElementById('mc'+id)?.classList.add('matched'));
+        memState.matched++;memState.combo++;
+        const pEl=document.getElementById('mPairs');if(pEl)pEl.textContent='配對 '+memState.matched+'/'+lvlPairs;
+        const cEl=document.getElementById('mCombo');if(cEl)cEl.textContent='連配 '+memState.combo;
+        if(memState.combo>=3)showToast('🔥 連配'+memState.combo+'組！');
+        awardStar();
+        if(memState.matched===lvlPairs)showMemWin(lvlPairs);
+        memState.flipped=[];memState.locked=false;
+      },350);
+    }else{
+      memState.combo=0;const cEl=document.getElementById('mCombo');if(cEl)cEl.textContent='連配 0';
+      setTimeout(()=>{
+        [a.id,b.id].forEach(id=>document.getElementById('mc'+id)?.classList.remove('flipped'));
+        memState.flipped=[];memState.locked=false;
+      },900);
+    }
+  }
+}
+
+function useHint(){
+  if(memState.hints<=0)return;memState.hints--;
+  const btn=document.getElementById('hintBtn');if(btn){btn.textContent='💡 提示('+memState.hints+')';if(memState.hints===0)btn.disabled=true;}
+  document.querySelectorAll('.mcard:not(.matched):not(.flipped)').forEach(c=>c.classList.add('flipped'));
+  setTimeout(()=>{document.querySelectorAll('.mcard:not(.matched)').forEach(c=>c.classList.remove('flipped'));memState.flipped=[];memState.locked=false;},1200);
+}
+
+function showMemWin(total){
+  clearInterval(window._memTimer);
+  const elapsed=Math.round((Date.now()-memState.startTime)/1000);
+  const acc=Math.round(total/memState.moves*100);
+  const stars=acc>=90?3:acc>=70?2:1;
+  const isNew=!CP.memBest[memState.level]||memState.moves<CP.memBest[memState.level];
+  if(isNew){CP.memBest[memState.level]=memState.moves;saveDB();}
+  awardBadge('memory_'+memState.level);
+  logActivity('記憶卡牌',total,total,elapsed);
+  document.getElementById('memWin').innerHTML=`
+    <div class="mem-win-banner">
+      <div class="mem-win-title">🎊 全部配對完成！</div>
+      <div style="font-size:13px;font-weight:700;opacity:.9;margin-bottom:6px">${memState.moves}步完成 ｜ ${elapsed}秒 ｜ 準確率${acc}%</div>
+      <div style="font-size:26px;margin-bottom:8px">${'⭐'.repeat(stars)}</div>
+      ${isNew?'<div class="mem-best-badge">🏆 新紀錄！</div>':''}
+      ${memState.hints<2?`<div style="font-size:11px;opacity:.7;margin-top:4px">使用了${2-memState.hints}次提示</div>`:''}
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:12px">
+        <button class="restart-btn" style="font-size:13px;padding:10px 18px" onclick="startMemory(document.getElementById('azContent'))">再玩一次</button>
+        <button class="restart-btn" style="font-size:13px;padding:10px 18px;background:linear-gradient(135deg,var(--purple),var(--blue))" onclick="renderMemoryLobby(document.getElementById('azContent'))">換難度</button>
+      </div>
+    </div>`;
+}
+
+/* ═══════════════════════
+   📊  PROGRESS HUB
+═══════════════════════ */
+let progTab='overview';
+function renderProgressHub(el){
+  el.innerHTML=`
+    <div class="prog-tabs">
+      <button class="prog-tab ${progTab==='overview'?'active':''}" onclick="setProgTab('overview')">總覽</button>
+      <button class="prog-tab ${progTab==='stats'?'active':''}" onclick="setProgTab('stats')">統計</button>
+      <button class="prog-tab ${progTab==='badges'?'active':''}" onclick="setProgTab('badges')">徽章</button>
+      <button class="prog-tab ${progTab==='heatmap'?'active':''}" onclick="setProgTab('heatmap')">熱圖</button>
+    </div>
+    <div id="progContent"></div>`;
+  renderProgTab();
+}
+function setProgTab(t){
+  progTab=t;
+  document.querySelectorAll('.prog-tab').forEach((b,i)=>b.classList.toggle('active',['overview','stats','badges','heatmap'][i]===t));
+  renderProgTab();
+}
+function renderProgTab(){
+  const el=document.getElementById('progContent');if(!el)return;
+  if(progTab==='overview')renderProgOverview(el);
+  else if(progTab==='stats')renderProgStats(el);
+  else if(progTab==='badges')renderProgBadges(el);
+  else renderProgHeatmap(el);
+}
+
+function renderProgOverview(el){
+  const p=CP,xpInLevel=p.xp%(p.level*200),xpNeeded=p.level*200;
+  const totalActs=(p.activity||[]).length;
+  el.innerHTML=`
+    <div style="background:linear-gradient(135deg,#2C3E50,#34495E);border-radius:18px;padding:16px;color:#fff;margin-bottom:12px">
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="level-ring">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle cx="40" cy="40" r="34" fill="none" stroke="rgba(255,255,255,.15)" stroke-width="8"/>
+            <circle cx="40" cy="40" r="34" fill="none" stroke="#FFD700" stroke-width="8"
+              stroke-dasharray="${2*Math.PI*34}" stroke-dashoffset="${2*Math.PI*34*(1-Math.min(xpInLevel/xpNeeded,1))}"
+              stroke-linecap="round" transform="rotate(-90 40 40)"/>
+          </svg>
+          <div class="level-ring-text"><div class="level-num">${p.level||1}</div><div class="level-lbl">等級</div></div>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:18px;font-weight:900;margin-bottom:2px">${p.avatar} ${p.name}</div>
+          <div style="font-size:11px;opacity:.7;font-weight:700;margin-bottom:8px">XP: ${xpInLevel} / ${xpNeeded}</div>
+          <div class="xp-bar-wrap"><div class="xp-bar-fill" style="width:${Math.min(xpInLevel/xpNeeded*100,100)}%"></div></div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <div style="flex:1;background:rgba(255,255,255,.1);border-radius:12px;padding:10px;text-align:center">
+          <div style="font-size:22px;font-weight:900;color:#FFD700">${p.streak?.current||0}</div>
+          <div style="font-size:10px;opacity:.7;font-weight:700">🔥連續天</div>
+        </div>
+        <div style="flex:1;background:rgba(255,255,255,.1);border-radius:12px;padding:10px;text-align:center">
+          <div style="font-size:22px;font-weight:900;color:#2ECC71">${p.streak?.max||0}</div>
+          <div style="font-size:10px;opacity:.7;font-weight:700">🏅最長紀錄</div>
+        </div>
+        <div style="flex:1;background:rgba(255,255,255,.1);border-radius:12px;padding:10px;text-align:center">
+          <div style="font-size:22px;font-weight:900;color:#3498DB">${totalActs}</div>
+          <div style="font-size:10px;opacity:.7;font-weight:700">📝總作答</div>
+        </div>
+        <div style="flex:1;background:rgba(255,255,255,.1);border-radius:12px;padding:10px;text-align:center">
+          <div style="font-size:22px;font-weight:900;color:#E74C3C">${p.stars}</div>
+          <div style="font-size:10px;opacity:.7;font-weight:700">⭐星星</div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div class="prog-section-title">📚 各年級掌握度</div>
+      ${[1,2,3,4,5,6].map(g=>{const pct=p.progress[g]||0;return`
+        <div class="prog-item">
+          <div class="prog-label-row">
+            <span style="font-size:13px;font-weight:800;color:${gc(g)}">${GRADE_NAMES[g-1]}年級</span>
+            <span style="font-size:13px;font-weight:700;color:var(--muted)">${pct}%</span>
+          </div>
+          <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:${pct}%;background:${gc(g)}"></div></div>
+        </div>`;}).join('')}
+    </div>
+    <div style="display:flex;gap:8px">
+      <div style="flex:1;background:#fff;border-radius:14px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.07);text-align:center">
+        <div style="font-size:22px;margin-bottom:4px">🏎️</div>
+        <div style="font-size:16px;font-weight:900">${p.raceBest?p.raceBest.score:'—'}</div>
+        <div style="font-size:10px;font-weight:800;color:var(--muted)">賽跑最高分</div>
+      </div>
+      <div style="flex:1;background:#fff;border-radius:14px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.07);text-align:center">
+        <div style="font-size:22px;margin-bottom:4px">🃏</div>
+        <div style="font-size:16px;font-weight:900">${p.memBest?.easy?p.memBest.easy+'步':'—'}</div>
+        <div style="font-size:10px;font-weight:800;color:var(--muted)">記憶最佳</div>
+      </div>
+      <div style="flex:1;background:#fff;border-radius:14px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.07);text-align:center">
+        <div style="font-size:22px;margin-bottom:4px">🎖</div>
+        <div style="font-size:16px;font-weight:900">${(p.badges||[]).length}</div>
+        <div style="font-size:10px;font-weight:800;color:var(--muted)">解鎖徽章</div>
+      </div>
+    </div>`;
+}
+
+function renderProgStats(el){
+  const acts=CP.activity||[];
+  const total=acts.reduce((s,a)=>s+a.total,0),correct=acts.reduce((s,a)=>s+a.correct,0);
+  const acc=total>0?Math.round(correct/total*100):0;
+  const topicMap={};acts.forEach(a=>{topicMap[a.topic]=topicMap[a.topic]||{c:0,t:0};topicMap[a.topic].c+=a.correct;topicMap[a.topic].t+=a.total;});
+  const days=['日','一','二','三','四','五','六'];const now=new Date();
+  const weekData=Array.from({length:7},(_,i)=>{
+    const d=new Date(now);d.setDate(d.getDate()-6+i);
+    const ds=d.toISOString().slice(0,10);
+    const da=acts.filter(a=>a.date===ds);
+    return{day:days[d.getDay()],correct:da.reduce((s,a)=>s+a.correct,0),total:da.reduce((s,a)=>s+a.total,0)};
+  });
+  const maxT=Math.max(...weekData.map(d=>d.total),1);
+  el.innerHTML=`
+    <div style="background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.07);margin-bottom:12px">
+      <div class="prog-section-title">📊 本週作答</div>
+      <div style="display:flex;align-items:flex-end;gap:6px;height:90px;margin-top:8px">
+        ${weekData.map(d=>`<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px">
+          <div style="font-size:10px;font-weight:900;color:${d.total>0?'var(--green)':'var(--muted)'}">${d.total||''}</div>
+          <div style="width:100%;height:${d.total/maxT*70}px;border-radius:6px 6px 0 0;min-height:4px;background:${d.total>0?'linear-gradient(180deg,var(--green),#27AE60)':'#F0F0F0'};transition:height .8s"></div>
+          <div style="font-size:10px;font-weight:800;color:var(--muted)">${d.day}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div style="background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.07);margin-bottom:12px">
+      <div class="prog-section-title">🎯 各主題正確率</div>
+      ${Object.entries(topicMap).length?Object.entries(topicMap).map(([topic,{c,t}])=>{const a=Math.round(c/t*100);return`
+        <div class="topic-accuracy-row">
+          <div class="ta-topic">${topic}</div>
+          <div class="ta-bar-wrap"><div class="ta-bar" style="width:${a}%;background:${a>=70?'var(--green)':'var(--orange)'}"></div></div>
+          <div class="ta-pct" style="color:${a>=70?'var(--green)':'var(--orange)'}">${a}%</div>
+        </div>`;}).join(''):'<div style="font-size:13px;color:var(--muted);font-weight:700">尚無作答紀錄</div>'}
+    </div>
+    <div style="display:flex;gap:8px">
+      <div style="flex:1;background:#fff;border-radius:14px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.07);text-align:center">
+        <div style="font-size:24px;font-weight:900;color:var(--green)">${acc}%</div>
+        <div style="font-size:11px;font-weight:800;color:var(--muted)">整體正確率</div>
+      </div>
+      <div style="flex:1;background:#fff;border-radius:14px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.07);text-align:center">
+        <div style="font-size:24px;font-weight:900;color:var(--blue)">${total}</div>
+        <div style="font-size:11px;font-weight:800;color:var(--muted)">總作答題數</div>
+      </div>
+      <div style="flex:1;background:#fff;border-radius:14px;padding:12px;box-shadow:0 2px 8px rgba(0,0,0,.07);text-align:center">
+        <div style="font-size:24px;font-weight:900;color:var(--orange)">${Object.keys(topicMap).length}</div>
+        <div style="font-size:11px;font-weight:800;color:var(--muted)">練習主題數</div>
+      </div>
+    </div>`;
+}
+
+const ALL_BADGES=[
+  {id:'first',icon:'⭐',name:'初次答題',desc:'完成第一題'},
+  {id:'streak3',icon:'🔥',name:'3天連勝',desc:'連續學習3天'},
+  {id:'streak7',icon:'💥',name:'7天連勝',desc:'連續學習7天'},
+  {id:'streak14',icon:'🌟',name:'14天連勝',desc:'連續學習14天'},
+  {id:'speed',icon:'🚀',name:'速算達人',desc:'答對超過8題'},
+  {id:'memory_easy',icon:'🧩',name:'記憶新手',desc:'完成簡單記憶卡牌'},
+  {id:'memory_medium',icon:'🃏',name:'記憶好手',desc:'完成中等記憶卡牌'},
+  {id:'memory_hard',icon:'💎',name:'記憶大師',desc:'完成困難記憶卡牌'},
+  {id:'race_champ',icon:'🏆',name:'賽跑冠軍',desc:'賽跑第一名'},
+  {id:'race_perfect',icon:'🏎️',name:'完美賽跑',desc:'賽跑得150分以上'},
+  {id:'allgrade',icon:'🎓',name:'全科達人',desc:'六個年級都有練習'},
+  {id:'diamond',icon:'👑',name:'數學之王',desc:'解鎖所有徽章'},
+];
+function renderProgBadges(el){
+  const unlocked=CP.badges||[],newOnes=CP.newBadges||[];
+  el.innerHTML=`
+    <div style="background:#FFF9F0;border-radius:14px;padding:10px;margin-bottom:10px">
+      <div style="font-size:12px;font-weight:800;color:var(--muted);margin-bottom:6px">收集進度 ${unlocked.length}/${ALL_BADGES.length}</div>
+      <div class="prog-bar-wrap"><div class="prog-bar-fill" style="width:${Math.round(unlocked.length/ALL_BADGES.length*100)}%;background:linear-gradient(90deg,var(--yellow),var(--orange))"></div></div>
+    </div>
+    <div class="badge-grid">
+      ${ALL_BADGES.map(b=>{const got=unlocked.includes(b.id);return`
+        <div class="badge-card ${got?'unlocked':'locked'}" title="${b.desc}">
+          ${newOnes.includes(b.id)?'<div class="badge-new">NEW</div>':''}
+          <div class="badge-icon">${b.icon}</div>
+          <div class="badge-name">${b.name}</div>
+        </div>`;}).join('')}
+    </div>
+    <div style="font-size:11px;color:var(--muted);font-weight:700;text-align:center;margin-top:8px">滑過徽章查看說明 💡</div>`;
+  CP.newBadges=[];saveDB();
+}
+
+function renderProgHeatmap(el){
+  const acts=CP.activity||[];
+  const dateMap={};acts.forEach(a=>{dateMap[a.date]=(dateMap[a.date]||0)+a.total;});
+  const now=new Date();
+  const cells=Array.from({length:49},(_,i)=>{
+    const d=new Date(now);d.setDate(d.getDate()-48+i);
+    const ds=d.toISOString().slice(0,10);const cnt=dateMap[ds]||0;
+    const intensity=cnt===0?0:cnt<5?1:cnt<10?2:cnt<20?3:4;
+    return{ds,cnt,color:['#F0F0F0','#C6E7C6','#7CC97C','#3EAD3E','#1E8E1E'][intensity]};
+  });
+  const streak=CP.streak||{current:0,max:0};
+  el.innerHTML=`
+    <div style="display:flex;gap:8px;margin-bottom:12px">
+      <div style="flex:1;background:linear-gradient(135deg,var(--red),var(--orange));border-radius:14px;padding:12px;text-align:center;color:#fff">
+        <div style="font-size:32px;font-weight:900">${streak.current}</div>
+        <div style="font-size:11px;opacity:.9;font-weight:700">🔥 目前連續天數</div>
+      </div>
+      <div style="flex:1;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:14px;padding:12px;text-align:center;color:#fff">
+        <div style="font-size:32px;font-weight:900">${streak.max}</div>
+        <div style="font-size:11px;opacity:.9;font-weight:700">🏅 最長連續紀錄</div>
+      </div>
+    </div>
+    <div style="background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.07)">
+      <div class="prog-section-title">📅 學習熱圖（近49天）</div>
+      <div style="display:flex;gap:3px;margin-bottom:4px">
+        ${['日','一','二','三','四','五','六'].map(d=>`<div style="flex:1;text-align:center;font-size:9px;font-weight:700;color:var(--muted)">${d}</div>`).join('')}
+      </div>
+      <div class="heatmap-grid">
+        ${cells.map(c=>`<div class="heatmap-cell" style="background:${c.color}" title="${c.ds}：${c.cnt}題"></div>`).join('')}
+      </div>
+      <div style="display:flex;gap:4px;align-items:center;justify-content:flex-end;margin-top:8px">
+        <span style="font-size:9px;font-weight:700;color:var(--muted)">少</span>
+        ${['#F0F0F0','#C6E7C6','#7CC97C','#3EAD3E','#1E8E1E'].map(c=>`<div style="width:12px;height:12px;border-radius:3px;background:${c}"></div>`).join('')}
+        <span style="font-size:9px;font-weight:700;color:var(--muted)">多</span>
+      </div>
+    </div>
+    <div style="background:#fff;border-radius:16px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.07);margin-top:10px">
+      <div class="prog-section-title">📝 最近作答紀錄</div>
+      ${acts.slice(-6).reverse().map(a=>`
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid #F4F4F4">
+          <div>
+            <div style="font-size:13px;font-weight:800">${a.topic}</div>
+            <div style="font-size:11px;color:var(--muted);font-weight:700">${a.date}${a.time?' · '+a.time+'秒':''}</div>
+          </div>
+          <div style="font-size:14px;font-weight:900;color:${a.correct/a.total>=.7?'var(--green)':'var(--orange)'}">${a.correct}/${a.total}</div>
+        </div>`).join('')||'<div style="font-size:13px;color:var(--muted);font-weight:700">尚無紀錄</div>'}
+    </div>`;
+}
+
+/* === AWARD / LOG === */
+function awardStar(n=1){
+  CP.stars=(CP.stars||0)+n;CP.xp=(CP.xp||0)+n*10;
+  const newLv=Math.floor(CP.xp/200)+1;
+  if(newLv>(CP.level||1)){CP.level=newLv;showToast('🎉 升級！Lv.'+newLv);}
+  updateTopBar();saveDB();if(CP.stars===1)awardBadge('first');
+}
+function awardBadge(id){
+  CP.badges=CP.badges||[];
+  if(!CP.badges.includes(id)){
+    CP.badges.push(id);CP.newBadges=CP.newBadges||[];CP.newBadges.push(id);
+    const b=ALL_BADGES.find(x=>x.id===id);if(b)showToast(b.icon+' 解鎖：'+b.name);
+    if(ALL_BADGES.every(b=>CP.badges.includes(b.id)))awardBadge('diamond');
+    saveDB();
+  }
+}
+function logActivity(topic,correct,total,time=0){
+  const today=new Date().toISOString().slice(0,10);
+  CP.activity=CP.activity||[];CP.activity.push({date:today,topic,correct,total,time});
+  if(CP.activity.length>100)CP.activity=CP.activity.slice(-100);
+  CP.topicStats=CP.topicStats||{};CP.topicStats[topic]=CP.topicStats[topic]||{c:0,t:0};
+  CP.topicStats[topic].c+=correct;CP.topicStats[topic].t+=total;
+  if(correct>0)CP.progress[currentGrade]=Math.min(100,(CP.progress[currentGrade]||0)+Math.round(correct/total*4));
+  // streak
+  CP.streak=CP.streak||{current:0,max:0,lastDate:''};
+  const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);
+  const yStr=yesterday.toISOString().slice(0,10);
+  if(CP.streak.lastDate!==today){
+    CP.streak.current=CP.streak.lastDate===yStr?CP.streak.current+1:1;
+    CP.streak.max=Math.max(CP.streak.max,CP.streak.current);
+    CP.streak.lastDate=today;
+  }
+  if(CP.streak.current>=3)awardBadge('streak3');
+  if(CP.streak.current>=7)awardBadge('streak7');
+  if(CP.streak.current>=14)awardBadge('streak14');
+  if([1,2,3,4,5,6].every(g=>(CP.progress[g]||0)>0))awardBadge('allgrade');
+  saveDB();
+}
+
+/* === PARENT DASHBOARD === */
+function checkPw(){
+  const pw=document.getElementById('pwInput').value;
+  if(pw===DB.parentPassword){hideModal('pw');showScreen('parent');renderParentDashboard();}
+  else{document.getElementById('pwInput').value='';document.getElementById('pwInput').style.borderColor='var(--red)';setTimeout(()=>document.getElementById('pwInput').style.borderColor='#eee',1500);}
+}
+function renderParentDashboard(){
+  const allActs=DB.profiles.flatMap(p=>p.activity||[]);
+  const totalQ=allActs.reduce((s,a)=>s+a.total,0),totalC=allActs.reduce((s,a)=>s+a.correct,0);
+  const acc=totalQ>0?Math.round(totalC/totalQ*100):0;
+  const totalStars=DB.profiles.reduce((s,p)=>s+(p.stars||0),0);
+  document.getElementById('parentBody').innerHTML=`
+    <div class="dash-grid">
+      <div class="dash-card"><div class="dash-num" style="color:var(--blue)">${DB.profiles.length}</div><div class="dash-lbl">👦 學生人數</div></div>
+      <div class="dash-card"><div class="dash-num" style="color:var(--green)">${totalQ}</div><div class="dash-lbl">📝 總作答題數</div></div>
+      <div class="dash-card"><div class="dash-num" style="color:var(--orange)">${acc}%</div><div class="dash-lbl">✅ 整體正確率</div></div>
+      <div class="dash-card"><div class="dash-num" style="color:var(--yellow)">${totalStars}</div><div class="dash-lbl">⭐ 總星星數</div></div>
+    </div>
+    ${DB.profiles.map(p=>{
+      const acts=p.activity||[];const pQ=acts.reduce((s,a)=>s+a.total,0),pC=acts.reduce((s,a)=>s+a.correct,0);
+      const pAcc=pQ>0?Math.round(pC/pQ*100):0;
+      const topicMap={};acts.forEach(a=>{topicMap[a.topic]=topicMap[a.topic]||{c:0,t:0};topicMap[a.topic].c+=a.correct;topicMap[a.topic].t+=a.total;});
+      const weakTopics=Object.entries(topicMap).filter(([,{c,t}])=>Math.round(c/t*100)<70).map(([t])=>t);
+      return`<div class="report-card">
+        <div class="rc-title">${p.avatar} ${p.name} <span style="font-size:12px;color:var(--muted);font-weight:700">${GRADE_NAMES[p.grade-1]||'?'}年 Lv.${p.level||1}</span></div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px">
+          <span style="font-size:13px;font-weight:800;color:var(--green)">✅${pAcc}%</span>
+          <span style="font-size:13px;font-weight:800;color:var(--yellow)">⭐${p.stars}</span>
+          <span style="font-size:13px;font-weight:800;color:var(--blue)">🎖${(p.badges||[]).length}徽章</span>
+          <span style="font-size:13px;font-weight:800;color:var(--orange)">🔥${p.streak?.current||0}天</span>
+          ${p.raceBest?`<span style="font-size:13px;font-weight:800;color:var(--purple)">🏎️${p.raceBest.score}分</span>`:''}
+        </div>
+        ${weakTopics.length?`<div style="background:#FFF0E0;border-radius:10px;padding:7px 10px;margin-bottom:8px;font-size:12px;font-weight:700;color:#D06000">⚠️ 需加強：${weakTopics.join('、')}</div>`:''}
+        ${[1,2,3,4,5,6].map(g=>`<div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <span style="font-size:11px;font-weight:800;color:${gc(g)};min-width:32px">${GRADE_NAMES[g-1]}年</span>
+          <div style="flex:1;height:7px;background:#F0F0F0;border-radius:10px;overflow:hidden">
+            <div style="height:100%;width:${p.progress[g]||0}%;background:${gc(g)};border-radius:10px;transition:width 1s"></div>
+          </div>
+          <span style="font-size:11px;font-weight:700;color:var(--muted);min-width:26px">${p.progress[g]||0}%</span>
+        </div>`).join('')}
+        <div style="font-size:11px;font-weight:800;color:var(--muted);margin:8px 0 4px">最近作答：</div>
+        ${acts.slice(-4).reverse().map(a=>`<div class="act-log"><span>${a.date}·${a.topic}</span><span class="${a.correct/a.total>=.7?'log-good':'log-bad'}">${a.correct}/${a.total}${a.time?' ('+a.time+'s)':''}</span></div>`).join('')||'<div style="font-size:12px;color:var(--muted);font-weight:700">尚無紀錄</div>'}
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <button style="padding:6px 12px;border-radius:10px;border:none;background:#FFE5CC;color:#D06000;font-size:12px;font-weight:800;cursor:pointer" onclick="resetProfile('${p.id}')">重置進度</button>
+          <button style="padding:6px 12px;border-radius:10px;border:none;background:#E5F0FF;color:#1A4EC0;font-size:12px;font-weight:800;cursor:pointer" onclick="adjGrade('${p.id}')">調整年級</button>
+        </div>
+      </div>`;}).join('')}
+    <div class="report-card">
+      <div class="rc-title">⚙️ 設定</div>
+      <div style="font-size:12px;font-weight:800;color:var(--muted);margin-bottom:8px">更改家長密碼：</div>
+      <div style="display:flex;gap:8px">
+        <input type="password" id="newPw" placeholder="新密碼(4位以上)" maxlength="8" style="flex:1;padding:8px 12px;border-radius:10px;border:2px solid #eee;font-size:14px;font-weight:700">
+        <button style="padding:8px 14px;border-radius:10px;border:none;background:var(--dark);color:#fff;font-size:13px;font-weight:800;cursor:pointer" onclick="changePw()">更改</button>
+      </div>
+      <div id="pwMsg" style="font-size:12px;font-weight:800;color:var(--green);margin-top:6px;min-height:18px"></div>
+    </div>`;
+}
+function resetProfile(id){
+  if(!confirm('確定重置？'))return;
+  const p=DB.profiles.find(x=>x.id===id);
+  if(p){p.progress={1:0,2:0,3:0,4:0,5:0,6:0};p.stars=0;p.xp=0;p.level=1;p.badges=[];p.activity=[];p.topicStats={};p.memBest={easy:null,medium:null,hard:null};p.raceBest=null;p.streak={current:0,max:0,lastDate:''};p.newBadges=[];saveDB();renderParentDashboard();}
+}
+function adjGrade(id){
+  const g=parseInt(prompt('輸入新年級（1-6）：'));
+  if(g>=1&&g<=6){const p=DB.profiles.find(x=>x.id===id);if(p){p.grade=g;saveDB();renderParentDashboard();}}
+}
+function changePw(){
+  const np=document.getElementById('newPw').value.trim();
+  if(np.length>=4){DB.parentPassword=np;saveDB();document.getElementById('pwMsg').textContent='密碼已更改！';document.getElementById('newPw').value='';}
+  else document.getElementById('pwMsg').textContent='密碼至少需要4位數！';
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+   🤖  AI LEARNING SYSTEM
+   - Tab 1: Weakness Analysis + Targeted Practice
+   - Tab 2: AI Teacher Chat (Anthropic API)
+   - Tab 3: TTS Voice Reading + Speech Recognition Answer
+═══════════════════════════════════════════════════════════ */
+
+let aiTab = 'weakness';
+let chatHistory = [];
+let speechSynth = window.speechSynthesis;
+let recognition = null;
+let ttsRate = 1.0;
+let voiceMode = 'read'; // 'read' | 'answer'
+let voiceCurrentQ = null;
+let voiceAnswerTimeout = null;
+
+/* ── Open / Close ── */
+function openAI() {
+  document.getElementById('screen-ai').classList.add('active');
+  setAITab(aiTab);
+}
+function closeAI() {
+  document.getElementById('screen-ai').classList.remove('active');
+  stopSpeech();
+}
+
+function setAITab(tab) {
+  aiTab = tab;
+  ['weakness','teacher','voice'].forEach(t => {
+    document.getElementById('ait-'+t).classList.toggle('active', t === tab);
+  });
+  const body = document.getElementById('aiBody');
+  body.innerHTML = '';
+  if (tab === 'weakness') renderWeaknessTab(body);
+  else if (tab === 'teacher') renderTeacherTab(body);
+  else renderVoiceTab(body);
+}
+
+/* ════════════════════════════════════════
+   TAB 1 — WEAKNESS ANALYSIS
+════════════════════════════════════════ */
+function renderWeaknessTab(el) {
+  const p = CP;
+  const acts = p.activity || [];
+  const topicMap = {};
+  acts.forEach(a => {
+    topicMap[a.topic] = topicMap[a.topic] || {c:0, t:0, dates:[]};
+    topicMap[a.topic].c += a.correct;
+    topicMap[a.topic].t += a.total;
+    topicMap[a.topic].dates.push(a.date);
+  });
+
+  const topics = Object.entries(topicMap).map(([name, {c,t,dates}]) => ({
+    name, acc: Math.round(c/t*100), count: t,
+    lastDate: dates[dates.length-1]
+  })).sort((a,b) => a.acc - b.acc);
+
+  const weak = topics.filter(t => t.acc < 70);
+  const strong = topics.filter(t => t.acc >= 85);
+  const overall = acts.length > 0
+    ? Math.round(acts.reduce((s,a)=>s+a.correct,0) / acts.reduce((s,a)=>s+a.total,0) * 100)
+    : 0;
+
+  // Radar SVG
+  const radarTopics = topics.slice(0, 6);
+  const radarSVG = radarTopics.length >= 3 ? buildRadar(radarTopics) : '';
+
+  el.innerHTML = `
+    <!-- Summary banner -->
+    <div style="background:linear-gradient(135deg,#667EEA,#764BA2);border-radius:16px;padding:14px;color:#fff;margin-bottom:12px">
+      <div style="font-size:13px;font-weight:700;opacity:.85;margin-bottom:4px">AI 分析結果 — ${p.name}</div>
+      <div style="font-size:28px;font-weight:900;margin-bottom:6px">${overall}% 整體正確率</div>
+      <div style="font-size:12px;font-weight:700;opacity:.8">共練習 ${acts.length} 次 · ${topics.length} 個主題</div>
+      ${overall < 60
+        ? '<div style="margin-top:8px;background:rgba(255,100,100,.3);border-radius:10px;padding:7px 10px;font-size:12px;font-weight:800">⚠️ 建議多練習基礎題目，打好根基！</div>'
+        : overall >= 85
+        ? '<div style="margin-top:8px;background:rgba(100,255,150,.2);border-radius:10px;padding:7px 10px;font-size:12px;font-weight:800">🌟 表現優秀！可以挑戰更高年級了！</div>'
+        : '<div style="margin-top:8px;background:rgba(255,200,50,.2);border-radius:10px;padding:7px 10px;font-size:12px;font-weight:800">📈 持續練習，進步中！</div>'
+      }
+    </div>
+
+    <!-- Radar chart -->
+    ${radarSVG ? `<div class="weakness-card"><div class="wc-title">🕸️ 能力雷達圖</div>${radarSVG}</div>` : ''}
+
+    <!-- Weak topics -->
+    <div class="weakness-card">
+      <div class="wc-title">🔴 需要加強的主題</div>
+      ${weak.length === 0
+        ? '<div style="font-size:13px;color:var(--green);font-weight:700">🎉 目前沒有明顯弱點，繼續保持！</div>'
+        : weak.map(t => `
+          <div class="insight-row">
+            <div class="insight-icon">${t.acc < 50 ? '🚨' : '⚠️'}</div>
+            <div style="flex:1">
+              <div class="insight-label">${t.acc < 50 ? '嚴重弱點' : '需要加強'}</div>
+              <div class="insight-text"><b>${t.name}</b> — 正確率 ${t.acc}%（共答 ${t.count} 題）</div>
+              <div style="height:6px;background:#F0F0F0;border-radius:6px;margin-top:6px;overflow:hidden">
+                <div style="height:100%;width:${t.acc}%;background:${t.acc<50?'var(--red)':'var(--orange)'};border-radius:6px;transition:width 1s"></div>
+              </div>
+            </div>
+          </div>`).join('')
+      }
+    </div>
+
+    <!-- Strong topics -->
+    ${strong.length > 0 ? `
+    <div class="weakness-card">
+      <div class="wc-title">🟢 擅長的主題</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px">
+        ${strong.map(t => `<span class="topic-chip" style="background:#E8FFF0;color:#1E9E50;border:2px solid #A0E8BB">✅ ${t.name} ${t.acc}%</span>`).join('')}
+      </div>
+    </div>` : ''}
+
+    <!-- AI Insights -->
+    <div class="weakness-card">
+      <div class="wc-title">💡 AI 學習建議</div>
+      ${generateInsights(overall, weak, strong, p)}
+    </div>
+
+    <!-- Targeted practice -->
+    <div class="weakness-card">
+      <div class="wc-title">🎯 針對弱點練習</div>
+      <div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:10px">選擇要練習的主題：</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">
+        ${[...weak, ...topics.filter(t=>t.acc>=70&&t.acc<85)].slice(0,5).map(t =>
+          `<span class="topic-chip" style="background:${t.acc<70?'#FFEEEE':'#FFF0E0'};color:${t.acc<70?'var(--red)':'var(--orange)'};border:2px solid ${t.acc<70?'#FFBBBB':'#FFCC99'}" onclick="startWeakPractice('${t.name}',this)">${t.name}</span>`
+        ).join('')}
+        ${topics.length === 0 ? '<span style="font-size:12px;color:var(--muted);font-weight:700">先去完成一些練習題，AI才能分析你的弱點！</span>' : ''}
+      </div>
+      <div id="weakPracticeArea"></div>
+    </div>`;
+}
+
+function buildRadar(topics) {
+  const n = Math.min(topics.length, 6);
+  const cx = 100, cy = 100, r = 75;
+  const angles = Array.from({length:n}, (_,i) => (i/n)*2*Math.PI - Math.PI/2);
+  const pts = topics.slice(0,n).map((t,i) => {
+    const ratio = t.acc/100;
+    return {x: cx + r*ratio*Math.cos(angles[i]), y: cy + r*ratio*Math.sin(angles[i])};
+  });
+  const outerPts = angles.map(a => ({x: cx+r*Math.cos(a), y: cy+r*Math.sin(a)}));
+  const ptsStr = pts.map(p=>`${p.x},${p.y}`).join(' ');
+  const outerStr = outerPts.map(p=>`${p.x},${p.y}`).join(' ');
+  return `<div style="text-align:center"><svg width="200" height="200" viewBox="0 0 200 200">
+    <polygon points="${outerStr}" fill="none" stroke="#E0E0E0" stroke-width="1.5"/>
+    ${[0.25,0.5,0.75].map(f=>`<polygon points="${angles.map(a=>`${cx+r*f*Math.cos(a)},${cy+r*f*Math.sin(a)}`).join(' ')}" fill="none" stroke="#F0F0F0" stroke-width="1"/>`).join('')}
+    ${angles.map((a,i)=>`<line x1="${cx}" y1="${cy}" x2="${outerPts[i].x}" y2="${outerPts[i].y}" stroke="#E8E8E8" stroke-width="1"/>`).join('')}
+    <polygon points="${ptsStr}" fill="rgba(102,126,234,.25)" stroke="#667EEA" stroke-width="2"/>
+    ${pts.map((p,i)=>`<circle cx="${p.x}" cy="${p.y}" r="4" fill="#667EEA"/>`).join('')}
+    ${topics.slice(0,n).map((t,i)=>{
+      const lx = cx + (r+16)*Math.cos(angles[i]);
+      const ly = cy + (r+16)*Math.sin(angles[i]);
+      return `<text x="${lx}" y="${ly}" text-anchor="middle" dominant-baseline="central" font-size="9" font-weight="800" fill="#555" font-family="Nunito">${t.name.slice(0,4)}</text>`;
+    }).join('')}
+  </svg></div>`;
+}
+
+function generateInsights(overall, weak, strong, p) {
+  const insights = [];
+  if (weak.length > 0) {
+    insights.push({icon:'🎯', label:'重點練習', text:`建議每天花10分鐘練習「${weak[0].name}」，這是你目前最需要加強的主題。`});
+  }
+  if (p.streak?.current >= 3) {
+    insights.push({icon:'🔥', label:'連續學習', text:`你已經連續學習 ${p.streak.current} 天了，繼續保持這個好習慣！`});
+  } else {
+    insights.push({icon:'📅', label:'養成習慣', text:'建議每天固定時間練習10-15分鐘，建立學習習慣比一次大量練習更有效。'});
+  }
+  if (strong.length > 0) {
+    insights.push({icon:'💪', label:'優勢主題', text:`你在「${strong[0].name}」表現非常好！可以嘗試挑戰更難的相關題目。`});
+  }
+  if (overall < 70) {
+    insights.push({icon:'📚', label:'基礎鞏固', text:'先從簡單的積木和比大小開始，確認基礎概念再往上，不要急於求成！'});
+  }
+  if ((p.activity||[]).length < 10) {
+    insights.push({icon:'🌱', label:'資料累積中', text:'目前答題資料還不夠多，建議多做幾組練習，AI就能給你更精準的建議！'});
+  }
+  return insights.map(i => `
+    <div class="insight-row">
+      <div class="insight-icon">${i.icon}</div>
+      <div><div class="insight-label">${i.label}</div><div class="insight-text">${i.text}</div></div>
+    </div>`).join('');
+}
+
+const WEAK_PRACTICE_GENS = {
+  '加法':()=>{const a=rf(1,9),b=rf(1,9);return{q:`${a} + ${b} = ?`,ans:a+b,...mc4(a+b,1,18)}},
+  '減法':()=>{const a=rf(5,15),b=rf(1,a);return{q:`${a} − ${b} = ?`,ans:a-b,...mc4(a-b,0,15)}},
+  '乘法':()=>{const a=rf(2,9),b=rf(2,9);return{q:`${a} × ${b} = ?`,ans:a*b,...mc4(a*b,2,81)}},
+  '除法':()=>{const b=rf(2,5),n=rf(1,9);return{q:`${b*n} ÷ ${b} = ?`,ans:n,...mc4(n,1,9)}},
+  '比大小':()=>{const a=rf(1,20),b=rf(1,20);return{q:`${a} ⬜ ${b}，空格填？`,ans:a>b?'>':a<b?'<':'=',choices:['>','<','=','≠'],answer:a>b?0:a<b?1:2}},
+  '時鐘':()=>{const h=rf(1,12),m=[0,15,30,45][rf(0,3)];return{q:`${h}點${m===0?'整':m+'分'} = ？`,ans:`${h}:${m.toString().padStart(2,'0')}`,...mc4(h*60+m,0,720)}},
+  '分數':()=>{const d=rf(2,6),n=rf(1,d);return{q:`${n}/${d} = ?%`,ans:Math.round(n/d*100),...mc4(Math.round(n/d*100),1,100)}},
+};
+let weakPracticeScore = {correct:0, total:0};
+function startWeakPractice(topic, chipEl) {
+  document.querySelectorAll('.topic-chip').forEach(c => c.style.fontWeight='800');
+  chipEl.style.outline = '3px solid var(--purple)';
+  weakPracticeScore = {correct:0, total:0};
+  nextWeakQ(topic);
+}
+function nextWeakQ(topic) {
+  const gen = WEAK_PRACTICE_GENS[topic] || WEAK_PRACTICE_GENS['加法'];
+  const {q, ans, choices, answer} = gen();
+  const area = document.getElementById('weakPracticeArea');
+  area.innerHTML = `
+    <div class="practice-q-wrap">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span style="font-size:12px;font-weight:800;color:var(--purple)">🎯 ${topic} 練習</span>
+        <span class="score-pill">✅ ${weakPracticeScore.correct}/${weakPracticeScore.total}</span>
+      </div>
+      <div style="font-size:26px;font-weight:900;text-align:center;color:var(--text);margin:10px 0">${q}</div>
+      <div class="ai-ans-grid">
+        ${choices.map((c,i)=>`<button class="ai-ans-btn" onclick="checkWeakQ(${i},${answer},'${topic}',this)">${c}</button>`).join('')}
+      </div>
+      <div class="feedback-msg" id="wFb"></div>
+      <button class="next-btn hidden" id="wNext" onclick="nextWeakQ('${topic}')">下一題 →</button>
+    </div>`;
+}
+function checkWeakQ(i, ans, topic, btn) {
+  document.querySelectorAll('.ai-ans-btn').forEach(b => b.style.pointerEvents='none');
+  const ok = i === ans;
+  btn.classList.add(ok ? 'correct' : 'wrong');
+  if (!ok) document.querySelectorAll('.ai-ans-btn')[ans].classList.add('correct');
+  weakPracticeScore.total++;
+  if (ok) { weakPracticeScore.correct++; awardStar(); }
+  document.getElementById('wFb').innerHTML = ok
+    ? '<span class="feedback-good">🎉 答對了！繼續加油！</span>'
+    : '<span class="feedback-bad">😅 再想想，多練幾次就會了！</span>';
+  document.getElementById('wNext').classList.remove('hidden');
+  logActivity(topic, ok?1:0, 1, 0);
+}
+
+/* ════════════════════════════════════════
+   TAB 2 — AI TEACHER CHAT
+════════════════════════════════════════ */
+function renderTeacherTab(el) {
+  chatHistory = [{
+    role: 'assistant',
+    content: `你好！${CP.name} 同學！我是你的 AI 數學老師 🤖\n\n我可以幫你：\n• 出指定難度的練習題\n• 解釋數學概念\n• 分析你的學習狀況\n• 回答任何數學問題\n\n你想做什麼呢？`
+  }];
+  el.innerHTML = `
+    <div class="quick-prompts">
+      <button class="quick-btn" onclick="quickPrompt('出5題一年級加法題給我練習')">出加法練習題</button>
+      <button class="quick-btn" onclick="quickPrompt('幫我解釋乘法的概念')">解釋乘法</button>
+      <button class="quick-btn" onclick="quickPrompt('我的弱點是什麼，給我建議')">分析弱點</button>
+      <button class="quick-btn" onclick="quickPrompt('出一道應用題給我')">應用題挑戰</button>
+      <button class="quick-btn" onclick="quickPrompt('幫我出3題分數題')">分數練習</button>
+      <button class="quick-btn" onclick="quickPrompt('九九乘法怎麼記比較快？')">九九乘法技巧</button>
+    </div>
+    <div class="chat-wrap" id="chatWrap"></div>
+    <div class="chat-input-row">
+      <textarea class="chat-input" id="chatInput" placeholder="輸入問題，例如：出3題二年級乘法題..." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
+      <button class="chat-send" id="chatSendBtn" onclick="sendChat()">➤</button>
+    </div>`;
+  renderChatMessages();
+}
+
+function renderChatMessages() {
+  const wrap = document.getElementById('chatWrap');
+  if (!wrap) return;
+  wrap.innerHTML = chatHistory.map(m => `
+    <div class="chat-bubble ${m.role === 'assistant' ? 'ai' : 'user'}">
+      ${m.role === 'assistant' ? '<div class="ai-avatar">🤖</div>' : ''}
+      <div style="white-space:pre-wrap">${escapeHtml(m.content)}</div>
+      ${m.quiz ? renderInlineQuiz(m.quiz) : ''}
+    </div>`).join('');
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+function escapeHtml(t) {
+  return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function renderInlineQuiz(quiz) {
+  return `<div class="generated-quiz">
+    <div class="gq-title">📝 練習題</div>
+    ${quiz.map((q,qi) => `
+      <div style="margin-bottom:10px;padding:8px;background:#F8F8FF;border-radius:10px">
+        <div style="font-size:14px;font-weight:900;margin-bottom:6px">${qi+1}. ${escapeHtml(q.q)}</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px">
+          ${q.choices.map((c,i)=>`<button style="padding:7px;border-radius:8px;border:2px solid #eee;background:#fff;font-size:13px;font-weight:800;cursor:pointer;transition:all .15s" onclick="checkInlineQ(this,${i},${q.answer},'${escapeHtml(String(c))}')">${c}</button>`).join('')}
+        </div>
+      </div>`).join('')}
+  </div>`;
+}
+
+function checkInlineQ(btn, i, ans, label) {
+  const grid = btn.parentElement;
+  grid.querySelectorAll('button').forEach(b => b.style.pointerEvents='none');
+  if (i === ans) { btn.style.background='#E8FFF0';btn.style.borderColor='var(--green)';awardStar(); }
+  else { btn.style.background='#FFEEEE';btn.style.borderColor='var(--red)';grid.querySelectorAll('button')[ans].style.background='#E8FFF0';grid.querySelectorAll('button')[ans].style.borderColor='var(--green)'; }
+}
+
+function quickPrompt(text) {
+  document.getElementById('chatInput').value = text;
+  sendChat();
+}
+
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const btn = document.getElementById('chatSendBtn');
+  const text = input.value.trim();
+  if (!text || btn.disabled) return;
+  input.value = '';btn.disabled = true;
+  chatHistory.push({role:'user', content:text});
+  renderChatMessages();
+  // Show typing indicator
+  const wrap = document.getElementById('chatWrap');
+  if (wrap) {
+    const typing = document.createElement('div');
+    typing.className = 'chat-bubble ai';typing.id = 'typingIndicator';
+    typing.innerHTML = '<div class="ai-avatar">🤖</div><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+    wrap.appendChild(typing);wrap.scrollTop = wrap.scrollHeight;
+  }
+
+  // Build system prompt with student context
+  const acts = CP.activity || [];
+  const topicMap = {};
+  acts.forEach(a => { topicMap[a.topic] = topicMap[a.topic]||{c:0,t:0}; topicMap[a.topic].c+=a.correct;topicMap[a.topic].t+=a.total; });
+  const weakStr = Object.entries(topicMap).filter(([,{c,t}])=>Math.round(c/t*100)<70).map(([t])=>t).join('、')||'目前無明顯弱點';
+
+  const systemPrompt = `你是一位親切、有趣、專業的台灣國小數學老師AI助手，正在輔助學生「${CP.name}」（${GRADE_NAMES[CP.grade-1]}年級，Lv.${CP.level}）學習數學。
+
+學生資料：
+- 整體正確率：${acts.length>0?Math.round(acts.reduce((s,a)=>s+a.correct,0)/acts.reduce((s,a)=>s+a.total,0)*100):0}%
+- 需加強主題：${weakStr}
+- 已累積星星：${CP.stars}顆
+- 學習連勝：${CP.streak?.current||0}天
+
+回覆規則：
+1. 用繁體中文，語氣親切、鼓勵，適合小學生
+2. 如果學生要求出題，請用以下JSON格式包在回覆末尾（markdown之外）：
+   [QUIZ]{"questions":[{"q":"題目","choices":["A","B","C","D"],"answer":0}]}[/QUIZ]
+3. 解釋概念時用簡單例子和比喻
+4. 每次回覆保持簡潔（不超過200字）
+5. 適時鼓勵學生`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: chatHistory.filter(m => !m.quiz).map(m => ({role:m.role, content:m.content}))
+      })
+    });
+    const data = await response.json();
+    const rawText = data.content?.[0]?.text || '抱歉，我現在有點忙，請稍後再試！';
+
+    // Parse quiz if present
+    let displayText = rawText;
+    let quiz = null;
+    const quizMatch = rawText.match(/\[QUIZ\]([\s\S]*?)\[\/QUIZ\]/);
+    if (quizMatch) {
+      try {
+        const parsed = JSON.parse(quizMatch[1].trim());
+        quiz = parsed.questions.slice(0,5).map(q => {
+          if (!q.choices || q.choices.length < 2) {
+            const gen = QUIZ_GENS[currentMode] || QUIZ_GENS.add10;
+            const generated = gen();
+            return {...generated, q: q.q || generated.q};
+          }
+          return q;
+        });
+        displayText = rawText.replace(/\[QUIZ\][\s\S]*?\[\/QUIZ\]/, '').trim();
+      } catch(e) { quiz = null; }
+    }
+
+    const typingEl = document.getElementById('typingIndicator');
+    if (typingEl) typingEl.remove();
+    chatHistory.push({role:'assistant', content:displayText, quiz});
+    renderChatMessages();
+  } catch(err) {
+    const typingEl = document.getElementById('typingIndicator');
+    if (typingEl) typingEl.remove();
+    chatHistory.push({role:'assistant', content:'抱歉，網路連線有問題，請確認是否在 Claude.ai 中使用此功能。\n\n我仍然可以幫你出練習題！試試說「出5題加法題」！'});
+    renderChatMessages();
+  }
+  btn.disabled = false;
+}
+
+/* ════════════════════════════════════════
+   TAB 3 — VOICE LEARNING
+════════════════════════════════════════ */
+let isSpeaking = false;
+let isListening = false;
+
+function renderVoiceTab(el) {
+  const hasSTT = 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+  const hasTTS = 'speechSynthesis' in window;
+
+  el.innerHTML = `
+    <!-- TTS Section -->
+    <div class="voice-card" style="margin-bottom:12px">
+      <div style="font-size:15px;font-weight:900;color:var(--text);margin-bottom:4px">🔊 語音朗讀題目</div>
+      <div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:12px">AI 老師會唸出數學題，你來聽！</div>
+      
+      <div style="display:flex;gap:6px;justify-content:center;margin-bottom:10px">
+        <select id="voiceGradeSelect" style="padding:7px 12px;border-radius:10px;border:2px solid #eee;font-size:13px;font-weight:700" onchange="generateVoiceQ()">
+          ${GRADE_NAMES.map((n,i)=>`<option value="${i+1}">${n}年級</option>`).join('')}
+        </select>
+        <select id="voiceModeSelect" style="padding:7px 12px;border-radius:10px;border:2px solid #eee;font-size:13px;font-weight:700" onchange="generateVoiceQ()">
+          <option value="add">加法</option>
+          <option value="mult25">乘法</option>
+          <option value="divide">除法</option>
+          <option value="compare">比大小</option>
+        </select>
+      </div>
+
+      <div id="voiceQDisplay" class="voice-q-display">按下「出題」開始！</div>
+
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin:10px 0">
+        <button class="speak-btn" onclick="generateVoiceQ()" id="newQBtn">🎲 出題</button>
+        <button class="speak-btn" onclick="speakCurrentQ()" id="speakBtn" ${!hasTTS?'disabled':''} style="background:linear-gradient(135deg,var(--green),var(--teal))">
+          ${hasTTS ? '🔊 朗讀題目' : '🔇 不支援'}
+        </button>
+        <button class="speak-btn" onclick="stopSpeech()" style="background:linear-gradient(135deg,var(--muted),#555)">⏹ 停止</button>
+      </div>
+
+      <div style="font-size:12px;font-weight:800;color:var(--muted);margin-bottom:6px">朗讀速度：</div>
+      <div class="tts-speed-row">
+        <button class="tts-speed-btn" onclick="setTTSRate(0.7,this)">🐢 慢速</button>
+        <button class="tts-speed-btn active" onclick="setTTSRate(1.0,this)">🚶 正常</button>
+        <button class="tts-speed-btn" onclick="setTTSRate(1.4,this)">🐇 快速</button>
+      </div>
+
+      ${hasTTS ? '' : '<div style="font-size:12px;color:var(--red);font-weight:700;margin-top:8px;text-align:center">此瀏覽器不支援語音朗讀</div>'}
+    </div>
+
+    <!-- Voice answer section -->
+    <div class="voice-card">
+      <div style="font-size:15px;font-weight:900;color:var(--text);margin-bottom:4px">🎤 語音答題模式</div>
+      <div style="font-size:12px;color:var(--muted);font-weight:700;margin-bottom:12px">聽題目，說出你的答案！</div>
+
+      <div id="voiceAnsQ" class="voice-q-display" style="font-size:20px">按「開始聽題」出題並朗讀</div>
+
+      <div id="waveformWrap" class="waveform hidden">
+        ${Array.from({length:9},(_,i)=>`<div class="wave-bar" style="animation-delay:${i*0.1}s"></div>`).join('')}
+      </div>
+
+      <div class="mic-btn" id="micBtn" onclick="toggleListening()">🎤</div>
+      <div class="voice-status" id="voiceStatus">${hasSTT ? '點擊麥克風開始答題' : '此裝置不支援語音辨識'}</div>
+      <div class="voice-transcript" id="voiceTranscript">說出你的答案...</div>
+      <div class="voice-feedback" id="voiceFeedback"></div>
+
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:10px">
+        <button class="speak-btn" onclick="startVoiceMode()" ${!hasTTS?'disabled':''}>▶ 開始聽題</button>
+        <button class="speak-btn" onclick="skipVoiceQ()" style="background:linear-gradient(135deg,var(--muted),#555)">⏭ 跳過</button>
+      </div>
+
+      <div style="margin-top:10px;display:flex;gap:8px;justify-content:center">
+        <span class="score-pill" id="voiceScore">語音答對：0 題</span>
+        <span class="score-pill" style="background:#E0EEFF;color:#1A4EC0" id="voiceTotal">共答：0 題</span>
+      </div>
+    </div>`;
+
+  generateVoiceQ();
+}
+
+let voiceScore = 0, voiceTotal = 0;
+let currentVoiceQ = null;
+
+function generateVoiceQ() {
+  const modeKey = document.getElementById('voiceModeSelect')?.value || 'add';
+  const gen = QUIZ_GENS[modeKey] || QUIZ_GENS.add10;
+  currentVoiceQ = gen();
+  const display = document.getElementById('voiceQDisplay');
+  if (display) display.textContent = currentVoiceQ.q;
+}
+
+function speakCurrentQ() {
+  if (!currentVoiceQ) return;
+  speak(currentVoiceQ.q.replace('?','').replace('=','等於').replace('+','加').replace('−','減').replace('×','乘以').replace('÷','除以'));
+}
+
+function speak(text, onEnd) {
+  if (!('speechSynthesis' in window)) return;
+  stopSpeech();
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'zh-TW';
+  utter.rate = ttsRate;
+  utter.pitch = 1.1;
+  utter.volume = 1;
+  // Try to find a Chinese voice
+  const voices = speechSynth.getVoices();
+  const zhVoice = voices.find(v => v.lang.startsWith('zh'));
+  if (zhVoice) utter.voice = zhVoice;
+  if (onEnd) utter.onend = onEnd;
+  speechSynth.speak(utter);
+  isSpeaking = true;
+}
+
+function stopSpeech() {
+  if ('speechSynthesis' in window) speechSynth.cancel();
+  isSpeaking = false;
+}
+
+function setTTSRate(rate, btn) {
+  ttsRate = rate;
+  document.querySelectorAll('.tts-speed-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function startVoiceMode() {
+  const modeKey = document.getElementById('voiceModeSelect')?.value || 'add';
+  const gen = QUIZ_GENS[modeKey] || QUIZ_GENS.add10;
+  currentVoiceQ = gen();
+  const qEl = document.getElementById('voiceAnsQ');
+  if (qEl) qEl.textContent = currentVoiceQ.q;
+  const qText = currentVoiceQ.q.replace('?','？').replace('=','等於').replace('+','加').replace('−','減').replace('×','乘以').replace('÷','除以');
+  speak('請回答這道題：' + qText, () => {
+    document.getElementById('voiceStatus').textContent = '請說出你的答案...';
+    setTimeout(() => startListening(), 400);
+  });
+}
+
+function skipVoiceQ() {
+  stopSpeech();
+  stopListening();
+  startVoiceMode();
+}
+
+function toggleListening() {
+  if (isListening) stopListening();
+  else startListening();
+}
+
+function startListening() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    document.getElementById('voiceStatus').textContent = '此瀏覽器不支援語音辨識，請改用 Chrome';
+    return;
+  }
+  recognition = new SpeechRecognition();
+  recognition.lang = 'zh-TW';
+  recognition.continuous = false;
+  recognition.interimResults = true;
+  recognition.maxAlternatives = 3;
+
+  recognition.onstart = () => {
+    isListening = true;
+    document.getElementById('micBtn').classList.add('listening');
+    document.getElementById('micBtn').textContent = '🔴';
+    document.getElementById('voiceStatus').textContent = '🎤 聆聽中...請說出答案！';
+    document.getElementById('waveformWrap').classList.remove('hidden');
+  };
+
+  recognition.onresult = (e) => {
+    const transcript = Array.from(e.results).map(r => r[0].transcript).join('').trim();
+    document.getElementById('voiceTranscript').textContent = transcript;
+    if (e.results[e.results.length-1].isFinal) {
+      processVoiceAnswer(transcript);
+    }
+  };
+
+  recognition.onerror = (e) => {
+    stopListening();
+    document.getElementById('voiceStatus').textContent = '辨識失敗，請再試一次 (' + e.error + ')';
+  };
+
+  recognition.onend = () => { if (isListening) stopListening(); };
+  recognition.start();
+}
+
+function stopListening() {
+  isListening = false;
+  if (recognition) { try { recognition.stop(); } catch(e){} recognition = null; }
+  const micBtn = document.getElementById('micBtn');
+  if (micBtn) { micBtn.classList.remove('listening'); micBtn.textContent = '🎤'; }
+  const wf = document.getElementById('waveformWrap');
+  if (wf) wf.classList.add('hidden');
+  const status = document.getElementById('voiceStatus');
+  if (status) status.textContent = '點擊麥克風重新答題';
+}
+
+function processVoiceAnswer(transcript) {
+  stopListening();
+  if (!currentVoiceQ) return;
+  const correct = String(currentVoiceQ.ans);
+  // Normalize: remove spaces, convert Chinese numbers
+  const normalize = s => s.replace(/\s/g,'').replace(/零/g,'0').replace(/一/g,'1').replace(/二/g,'2').replace(/三/g,'3').replace(/四/g,'4').replace(/五/g,'5').replace(/六/g,'6').replace(/七/g,'7').replace(/八/g,'8').replace(/九/g,'9').replace(/十/g,'10');
+  const norm = normalize(transcript);
+  const isCorrect = norm.includes(normalize(correct)) || norm === normalize(correct);
+
+  voiceTotal++;
+  const fb = document.getElementById('voiceFeedback');
+  const scoreEl = document.getElementById('voiceScore');
+  const totalEl = document.getElementById('voiceTotal');
+
+  if (isCorrect) {
+    voiceScore++;
+    if (fb) fb.innerHTML = `<span class="feedback-good">🎉 答對了！正確答案是 ${correct}！</span>`;
+    speak('答對了！太棒了！');
+    awardStar();
+  } else {
+    if (fb) fb.innerHTML = `<span class="feedback-bad">😅 答案是 ${correct}，你說了「${transcript}」</span>`;
+    speak('再想想，答案是' + correct);
+  }
+  if (scoreEl) scoreEl.textContent = '語音答對：' + voiceScore + ' 題';
+  if (totalEl) totalEl.textContent = '共答：' + voiceTotal + ' 題';
+  logActivity('語音答題', isCorrect?1:0, 1, 0);
+
+  // Auto next after 2.5s
+  clearTimeout(voiceAnswerTimeout);
+  voiceAnswerTimeout = setTimeout(() => {
+    if (document.getElementById('voiceAnsQ')) startVoiceMode();
+  }, 2500);
+}
+
+/* ── Show AI button when in app ── */
+function updateAIFabVisibility() {
+  const fab = document.getElementById('aiFab');
+  if (fab) fab.style.display = document.getElementById('screen-app').classList.contains('active') ? 'flex' : 'none';
+}
+const _origShowScreen = showScreen;
+window.showScreen = function(n) {
+  _origShowScreen(n);
+  updateAIFabVisibility();
+};
+
+</script>
+
+<!-- AI FLOATING BUTTON -->
+<button id="aiFab" onclick="openAI()" style="position:fixed;bottom:90px;right:16px;width:54px;height:54px;border-radius:50%;border:none;background:linear-gradient(135deg,#667EEA,#764BA2);color:#fff;font-size:24px;box-shadow:0 4px 16px rgba(102,126,234,.5);z-index:250;cursor:pointer;transition:all .3s;display:none" title="AI 學習助手">🤖</button>
+
+<!-- AI LEARNING SCREEN -->
+<div id="screen-ai" class="ai-screen">
+  <div class="ai-header">
+    <div class="ai-header-icon">🤖</div>
+    <div class="ai-header-title">AI 學習助手</div>
+    <button class="ai-back" onclick="closeAI()">✕ 關閉</button>
+  </div>
+  <div class="ai-tabs">
+    <button class="ai-tab active" id="ait-weakness" onclick="setAITab('weakness')"><span class="at-icon">🔍</span>弱點分析</button>
+    <button class="ai-tab" id="ait-teacher" onclick="setAITab('teacher')"><span class="at-icon">💬</span>AI老師</button>
+    <button class="ai-tab" id="ait-voice" onclick="setAITab('voice')"><span class="at-icon">🎤</span>語音學習</button>
+  </div>
+  <div class="ai-body" id="aiBody"></div>
+</div>
+
+</body>
+</html>
